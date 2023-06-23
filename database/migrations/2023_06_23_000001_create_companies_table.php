@@ -20,6 +20,9 @@ class CreateCompaniesTable extends Migration
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
+            $table->string('billing_address')->nullable();
+            $table->string('subscription_plan')->nullable();
+            $table->timestamp('subscription_expiry');
             $table->timestamps();
         });
     }

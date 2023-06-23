@@ -22,3 +22,7 @@ Route::post('/register', 'AuthController@register');
 Route::post('/login', 'AuthController@login');
 
 Route::get('/patient-records', 'PatientRecordController@index')->middleware('permission:view_records');
+
+Route::middleware('auth:api')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'getUserDetails']);
+});
