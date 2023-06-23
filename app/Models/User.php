@@ -42,4 +42,12 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * Get the patient records for the practitioner.
+     */
+    public function patientRecords()
+    {
+        return $this->hasMany(PatientRecord::class, 'practitioner_id');
+    }
 }
