@@ -19,7 +19,6 @@ class User extends Authenticatable
         'vat_number',
         'company_id',
         'branch_id',
-        'role_id'
     ];
 
     protected $hidden = [
@@ -54,5 +53,13 @@ class User extends Authenticatable
     public function patientRecords()
     {
         return $this->hasMany(PatientRecord::class, 'practitioner_id');
+    }
+
+    /**
+     * The roles that belong to the user.
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'role_user');
     }
 }
