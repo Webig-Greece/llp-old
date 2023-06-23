@@ -21,9 +21,12 @@ class CreateCompaniesTable extends Migration
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('billing_address')->nullable();
-            $table->string('subscription_plan')->nullable();
-            $table->timestamp('subscription_expiry');
+            $table->unsignedBigInteger('subscription_plan_id')->nullable();
+            $table->timestamp('subscription_expiry')->nullable();
             $table->timestamps();
+
+            // Foreign key constraint
+            $table->foreign('subscription_plan_id')->references('id')->on('subscription_plans');
         });
     }
 

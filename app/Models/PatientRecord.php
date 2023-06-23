@@ -10,14 +10,23 @@ class PatientRecord extends Model
     use HasFactory;
 
     protected $fillable = [
+        'branch_id',
         'practitioner_id',
         'patient_name',
         'notes',
-        'appointment_date'
+        'medical_history'
     ];
 
     /**
-     * Get the practitioner who owns the patient record.
+     * Get the branch that owns the patient record.
+     */
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    /**
+     * Get the practitioner (user) that owns the patient record.
      */
     public function practitioner()
     {

@@ -19,8 +19,6 @@ class CreatePatientRecordsTable extends Migration
             $table->unsignedBigInteger('practitioner_id');
             $table->string('patient_name');
             $table->text('notes')->nullable();
-            $table->date('appointment_date')->nullable();
-            $table->text('appointments')->nullable();
             $table->text('medical_history')->nullable();
             $table->timestamps();
 

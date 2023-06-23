@@ -23,4 +23,20 @@ class Branch extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    /**
+     * Get the users for the branch.
+     */
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+
+    /**
+     * Get the patient records for the branch.
+     */
+    public function patientRecords()
+    {
+        return $this->hasMany(PatientRecord::class);
+    }
 }
