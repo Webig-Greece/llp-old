@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
-use App\Models\Company;
 use Illuminate\Http\Request;
 
 class BranchController extends Controller
@@ -18,22 +17,26 @@ class BranchController extends Controller
 
     public function index()
     {
-        $branches = Branch::all();
+        $branches = Branch::with('company')->get();
         return response()->json($branches);
     }
 
     public function store(Request $request)
     {
         $request->validate([
+            'company_id' => 'required|integer|exists:companies,id',
             'name' => 'required|string',
             'address' => 'required|string',
-            'company_id' => 'required|integer|exists:companies,id'
+            'phone' => 'required|string',
+            'email' => 'required|email'
         ]);
 
         $branch = new Branch([
+            'company_id' => $request->company_id,
             'name' => $request->name,
             'address' => $request->address,
-            'company_id' => $request->company_id
+            'phone' => $request->phone,
+            'email' => $request->email
         ]);
 
         $branch->save();
@@ -43,7 +46,7 @@ class BranchController extends Controller
 
     public function show($id)
     {
-        $branch = Branch::find($id);
+        $branch = Branch::with('company')->find($id);
 
         if (!$branch) {
             return response()->json(['message' => 'Branch not found'], 404);
@@ -61,9 +64,11 @@ class BranchController extends Controller
         }
 
         $request->validate([
+            'company_id' => 'integer|exists:companies,id',
             'name' => 'string',
             'address' => 'string',
-            'company_id' => 'integer|exists:companies,id'
+            'phone' => 'string',
+            'email' => 'email'
         ]);
 
         $branch->fill($request->all());
