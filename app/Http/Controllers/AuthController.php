@@ -7,6 +7,8 @@ use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Mail\WelcomeEmail;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -30,6 +32,9 @@ class AuthController extends Controller
         // Assign selected role to new user
         $role = Role::where('name', $request->role)->first();
         $user->roles()->attach($role);
+
+        // Send welcome email
+        Mail::to($user->email)->send(new WelcomeEmail($user->name));
 
         return response()->json([
             'message' => 'Successfully created user!'

@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use Illuminate\Http\Request;
+use App\Mail\AppointmentReminder;
+use Illuminate\Support\Facades\Mail;
+
 
 class AppointmentController extends Controller
 {
@@ -41,6 +44,9 @@ class AppointmentController extends Controller
         ]);
 
         $appointment->save();
+
+        // Send email notification
+        Mail::to($appointment->patient->email)->send(new AppointmentReminder($appointment));
 
         return response()->json(['message' => 'Appointment created successfully', 'appointment' => $appointment], 201);
     }
