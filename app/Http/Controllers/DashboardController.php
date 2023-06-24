@@ -10,7 +10,7 @@ class DashboardController extends Controller
     public function getUserDetails()
     {
         $user = Auth::user();
-        $subscription = $user->subscription; // Assuming a relationship is set up
+        $subscription = $user->subscription;
 
         return response()->json([
             'user' => $user,
