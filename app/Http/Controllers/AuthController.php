@@ -35,8 +35,8 @@ class AuthController extends Controller
         $role = Role::where('name', $request->role)->first();
         $user->roles()->attach($role);
 
-        // Send welcome email
-        Mail::to($user->email)->send(new WelcomeEmail($user->name));
+        // Send welcome email with verification link
+        $user->sendEmailVerificationNotification();
 
         return response()->json([
             'message' => 'Successfully created user!'

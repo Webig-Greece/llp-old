@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,3 +52,18 @@ Route::group(['middleware' => 'check-subscription'], function () {
 });
 
 Route::post('/create-subscription', [PaymentController::class, 'createSubscription'])->middleware('auth:api');
+
+// Email verification routes
+Route::get('/email/verify', function () {
+    return response(['message' => 'Please verify your email address.']);
+})->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return response(['message' => 'Email verified!']);
+})->name('verification.verify');
+
+Route::post('/email/resend', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return response(['message' => 'Verification link sent!']);
+})->middleware(['auth:api'])->name('verification.resend');
