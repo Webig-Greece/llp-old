@@ -14,7 +14,9 @@ class PatientRecord extends Model
         'practitioner_id',
         'patient_name',
         'notes',
-        'medical_history'
+        'medical_history',
+        'treatment_plan',
+        'next_appointment'
     ];
 
     /**

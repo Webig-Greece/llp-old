@@ -20,6 +20,8 @@ class CreatePatientRecordsTable extends Migration
             $table->string('patient_name');
             $table->text('notes')->nullable();
             $table->text('medical_history')->nullable();
+            $table->text('treatment_plan')->nullable();
+            $table->dateTime('next_appointment')->nullable();
             $table->timestamps();
 
             // Foreign key constraints

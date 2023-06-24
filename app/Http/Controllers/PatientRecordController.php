@@ -19,7 +19,7 @@ class PatientRecordController extends Controller
      */
     public function index()
     {
-        return auth()->user()->patientRecords;
+        return auth()->user()->patientRecords()->with('branch')->get();
     }
 
     /**
@@ -30,11 +30,18 @@ class PatientRecordController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'branch_id' => 'required|integer|exists:branches,id',
+            'patient_name' => 'required|string|max:255',
+            'notes' => 'nullable|string',
+            'medical_history' => 'nullable|string'
+        ]);
+
         $patientRecord = new PatientRecord($request->all());
         $patientRecord->user_id = auth()->user()->id;
         $patientRecord->save();
 
-        return response()->json($patientRecord, 201);
+        return response()->json(['message' => 'Patient record created successfully', 'data' => $patientRecord], 201);
     }
 
     /**
@@ -45,6 +52,7 @@ class PatientRecordController extends Controller
      */
     public function show(PatientRecord $patientRecord)
     {
+        $this->authorize('view', $patientRecord);
         // Check if the authenticated user's ID matches the user_id of the patient record
         if (auth()->user()->id !== $patientRecord->user_id) {
             return response()->json(['error' => 'Unauthorized'], 403);
@@ -62,6 +70,14 @@ class PatientRecordController extends Controller
      */
     public function update(Request $request, PatientRecord $patientRecord)
     {
+        $request->validate([
+            'branch_id' => 'sometimes|required|integer|exists:branches,id',
+            'patient_name' => 'sometimes|required|string|max:255',
+            'notes' => 'nullable|string',
+            'medical_history' => 'nullable|string'
+        ]);
+
+        $this->authorize('update', $patientRecord);
         // Check if the authenticated user's ID matches the user_id of the patient record
         if (auth()->user()->id !== $patientRecord->user_id) {
             return response()->json(['error' => 'Unauthorized'], 403);
@@ -79,6 +95,7 @@ class PatientRecordController extends Controller
      */
     public function destroy(PatientRecord $patientRecord)
     {
+        $this->authorize('delete', $patientRecord);
         // Check if the authenticated user's ID matches the user_id of the patient record
         if (auth()->user()->id !== $patientRecord->user_id) {
             return response()->json(['error' => 'Unauthorized'], 403);
