@@ -1,4 +1,4 @@
-### LifeLiftPro
+# LifeLiftPro
 
 LifeLiftPro is a comprehensive SaaS (Software-as-a-Service) solution designed specifically for psychologists, mental health counselors, and coaches. It aims to streamline and simplify the management of patient records, appointments, billing, and communication, while ensuring the highest level of data security and confidentiality. This README file provides an overview of the LifeLiftPro project and instructions on how to set it up and contribute to its development.
 
