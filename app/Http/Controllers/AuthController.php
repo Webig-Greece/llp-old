@@ -27,6 +27,8 @@ class AuthController extends Controller
             'password' => bcrypt($request->password)
         ]);
 
+        // Set the trial_ends_at field to 10 days from now
+        $user->trial_ends_at = now()->addDays(10);
         $user->save();
 
         // Assign selected role to new user

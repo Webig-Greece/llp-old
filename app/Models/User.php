@@ -67,4 +67,30 @@ class User extends Authenticatable
     {
         return $this->belongsTo(SubscriptionPlan::class);
     }
+
+
+    /**
+     * Check if the user has an active subscription.
+     *
+     * @return bool
+     */
+    public function hasActiveSubscription()
+    {
+        // Check if the user has a Stripe Subscription ID and the trial period has not expired
+        return $this->stripe_subscription_id !== null || $this->trial_ends_at > now();
+    }
+
+    /**
+     * Set the Stripe Customer ID and Subscription ID for the user.
+     *
+     * @param  string  $customerId
+     * @param  string  $subscriptionId
+     * @return void
+     */
+    public function setStripeSubscription($customerId, $subscriptionId)
+    {
+        $this->stripe_customer_id = $customerId;
+        $this->stripe_subscription_id = $subscriptionId;
+        $this->save();
+    }
 }

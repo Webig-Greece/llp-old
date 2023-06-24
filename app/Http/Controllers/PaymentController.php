@@ -3,40 +3,37 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Stripe;
-use Customer;
-use Subscription;
+use App\Services\StripeService;
 
 class PaymentController extends Controller
 {
-    public function __construct()
+    protected $stripeService;
+
+    public function __construct(StripeService $stripeService)
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        $this->stripeService = $stripeService;
     }
 
     public function createSubscription(Request $request)
     {
         $request->validate([
             'stripeToken' => 'required',
-            'plan' => 'required'
+            'planId' => 'required'
         ]);
 
-        // Create a new customer
-        $customer = Customer::create([
-            'source' => $request->stripeToken,
-            'email' => $request->user()->email,
-            'name' => $request->user()->name
-        ]);
+        // Retrieve the user
+        $user = $request->user();
 
-        // Create a new subscription
-        $subscription = Subscription::create([
-            'customer' => $customer->id,
-            'items' => [['plan' => $request->plan]],
-        ]);
+        // Create a subscription in Stripe
+        $stripeData = $this->stripeService->createSubscription([
+            'email' => $user->email,
+            'name' => $user->name,
+            'stripeToken' => $request->stripeToken
+        ], $request->planId);
 
-        // Store subscription info in the database (to be implemented)
-        // ...
+        // Store the StripeCustomer ID and Subscription ID in the User model
+        $user->setStripeSubscription($stripeData['customerId'], $stripeData['subscriptionId']);
 
-        return response()->json(['message' => 'Subscription successful', 'subscription' => $subscription]);
+        return response()->json(['message' => 'Subscription successful']);
     }
 }

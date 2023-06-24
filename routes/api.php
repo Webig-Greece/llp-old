@@ -45,4 +45,9 @@ Route::middleware(['auth:api', 'permission:create-appointment'])->group(function
     Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy']);
 });
 
+// Routes that require an active subscription here
+Route::group(['middleware' => 'check-subscription'], function () {
+    // Place routes that require an active subscription here
+});
+
 Route::post('/create-subscription', [PaymentController::class, 'createSubscription'])->middleware('auth:api');
