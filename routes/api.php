@@ -14,15 +14,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// User Auth
+Route::post('register', 'AuthController@register');
+Route::post('login', 'AuthController@login');
+Route::middleware('auth:api')->group(function () {
+    Route::get('logout', 'AuthController@logout');
+    Route::get('user-profile', 'AuthController@userProfile');
 });
-
-Route::post('/register', 'AuthController@register');
-Route::post('/login', 'AuthController@login');
-
-Route::get('/patient-records', 'PatientRecordController@index')->middleware('permission:view_records');
-
+// Dashboard
 Route::middleware('auth:api')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'getUserDetails']);
 });
+
+Route::get('/patient-records', 'PatientRecordController@index')->middleware('permission:view_records');
