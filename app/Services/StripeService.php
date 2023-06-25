@@ -15,7 +15,7 @@ class StripeService
 
     /**
      * Create a new subscription in Stripe.
-     *
+     *s
      * @param  array  $userData
      * @param  string  $planId
      * @return array
@@ -39,5 +39,38 @@ class StripeService
             'customerId' => $customer->id,
             'subscriptionId' => $subscription->id
         ];
+    }
+
+    public function updateSubscription($subscriptionId, $newPlanId)
+    {
+        // Initialize the Stripe client
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        // Retrieve the subscription
+        $subscription = Subscription::retrieve($subscriptionId);
+
+        // Update the subscription's plan
+        $subscription->items = [
+            [
+                'id' => $subscription->items->data[0]->id,
+                'plan' => $newPlanId,
+            ],
+        ];
+
+        return $subscription;
+    }
+
+    public function cancelSubscription($subscriptionId)
+    {
+        // Initialize the Stripe client
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        // Retrieve the subscription
+        $subscription = Subscription::retrieve($subscriptionId);
+
+        // Cancel the subscription
+        $subscription->cancel();
+
+        return $subscription;
     }
 }

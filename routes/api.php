@@ -67,3 +67,7 @@ Route::post('/email/resend', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
     return response(['message' => 'Verification link sent!']);
 })->middleware(['auth:api'])->name('verification.resend');
+
+
+// Handle Stripe Webhook
+Route::post('/stripe/webhook', 'PaymentController@handleWebhook');
