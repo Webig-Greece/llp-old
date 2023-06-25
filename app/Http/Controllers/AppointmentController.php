@@ -31,7 +31,10 @@ class AppointmentController extends Controller
             'date' => 'required|date',
             'time' => 'required|date_format:H:i:s',
             'duration' => 'required|integer',
-            'notes' => 'nullable|string'
+            'notes' => 'nullable|string',
+            'recurring' => 'required|boolean',
+            'recurring_interval' => 'required_if:recurring,true|string',
+            'recurring_end_date' => 'required_if:recurring,true|date',
         ]);
 
         $appointment = new Appointment([
@@ -40,7 +43,10 @@ class AppointmentController extends Controller
             'date' => $request->date,
             'time' => $request->time,
             'duration' => $request->duration,
-            'notes' => $request->notes
+            'notes' => $request->notes,
+            'recurring' => $request->recurring,
+            'recurring_interval' => $request->recurring_interval,
+            'recurring_end_date' => $request->recurring_end_date,
         ]);
 
         $appointment->save();
@@ -75,7 +81,10 @@ class AppointmentController extends Controller
             'date' => 'date',
             'time' => 'date_format:H:i:s',
             'duration' => 'integer',
-            'notes' => 'nullable|string'
+            'notes' => 'nullable|string',
+            'recurring' => 'sometimes|required|boolean',
+            'recurring_interval' => 'required_if:recurring,true|string',
+            'recurring_end_date' => 'required_if:recurring,true|date',
         ]);
 
         $appointment->fill($request->all());

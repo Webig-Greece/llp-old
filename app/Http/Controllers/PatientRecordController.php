@@ -19,7 +19,7 @@ class PatientRecordController extends Controller
      */
     public function index()
     {
-        return auth()->user()->patientRecords()->with('branch')->get();
+        return auth()->user()->patientRecords->with('branch')->paginate(10);
     }
 
     /**
@@ -34,7 +34,9 @@ class PatientRecordController extends Controller
             'branch_id' => 'required|integer|exists:branches,id',
             'patient_name' => 'required|string|max:255',
             'notes' => 'nullable|string',
-            'medical_history' => 'nullable|string'
+            'medical_history' => 'nullable|string',
+            'treatment_plan' => 'nullable|string',
+            'next_appointment' => 'nullable|date'
         ]);
 
         $patientRecord = new PatientRecord($request->all());
@@ -74,7 +76,9 @@ class PatientRecordController extends Controller
             'branch_id' => 'sometimes|required|integer|exists:branches,id',
             'patient_name' => 'sometimes|required|string|max:255',
             'notes' => 'nullable|string',
-            'medical_history' => 'nullable|string'
+            'medical_history' => 'nullable|string',
+            'treatment_plan' => 'nullable|string',
+            'next_appointment' => 'nullable|date'
         ]);
 
         $this->authorize('update', $patientRecord);

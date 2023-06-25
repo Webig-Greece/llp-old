@@ -7,7 +7,6 @@ use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Mail\WelcomeEmail;
 use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
