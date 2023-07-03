@@ -27,7 +27,7 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::middleware('auth:api')->group(function () {
-    Route::get('auth/logout', [AuthController::class, 'logout']);
+    Route::post('auth/logout', [AuthController::class, 'logout']);
     Route::get('auth/user-profile', [AuthController::class, 'userProfile']);
     Route::get('dashboard', [DashboardController::class, 'getUserDetails']);
     Route::post('create-subscription', [PaymentController::class, 'createSubscription']);

@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use Laravel\Sanctum\PersonalAccessToken;
+use Illuminate\Support\Facades\Cookie;
+
 
 class AuthController extends Controller
 {
@@ -57,7 +61,8 @@ class AuthController extends Controller
         }
 
         $user = $request->user();
-        $token = $user->createToken('Personal Access Token')->accessToken;
+        $tokenResult = $user->createToken('Personal Access Token');
+        $token = $tokenResult->plainTextToken;
 
         // Return additional user information
         return response()->json([
@@ -68,8 +73,21 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        // Revoke the user's token
-        $request->user()->token()->revoke();
+        // Get the token ID from the Authorization header
+        $tokenId = $request->bearerToken();
+
+        // Revoke the token
+        if ($tokenId) {
+            $token = PersonalAccessToken::findToken($tokenId);
+            if ($token) {
+                $token->delete();
+                // Clear the token cookie
+                Cookie::queue(Cookie::forget('laravel_session'));
+
+                // Clear the XSRF-TOKEN cookie
+                Cookie::queue(Cookie::forget('XSRF-TOKEN'));
+            }
+        }
 
         return response()->json([
             'message' => 'Successfully logged out'
