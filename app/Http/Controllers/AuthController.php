@@ -60,7 +60,8 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $user = $request->user();
+        // $user = $request->user();
+        $user = $request->user()->load('roles'); // Eager load the role
         $tokenResult = $user->createToken('Personal Access Token');
         $token = $tokenResult->plainTextToken;
 

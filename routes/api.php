@@ -35,6 +35,7 @@ Route::middleware('auth:api')->group(function () {
 
 // Patient Records
 Route::middleware(['auth:api', 'permission:view_records'])->group(function () {
+    // Route::middleware(['auth:api'])->group(function () {
     Route::get('patient-records', [PatientRecordController::class, 'index']);
     Route::get('patient-records/{id}', [PatientRecordController::class, 'show']);
     Route::post('patient-records', [PatientRecordController::class, 'store']);
