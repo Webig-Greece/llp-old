@@ -18,7 +18,8 @@ class UsersTableSeeder extends Seeder
     {
         // Regular User
         DB::table('users')->insert([
-            'name' => 'User1 Example',
+            'first_name' => 'User1',
+            'last_name' => 'Example',
             'email' => 'user1@example.com',
             'password' => Hash::make('123456'),
             'vat_number' => '123456789',
@@ -30,7 +31,8 @@ class UsersTableSeeder extends Seeder
 
         // Admin User
         DB::table('users')->insert([
-            'name' => 'Admin User',
+            'first_name' => 'Admin',
+            'last_name' => 'User',
             'email' => 'admin@example.com',
             'password' => Hash::make('123456'),
             'vat_number' => '987654321',
