@@ -19,7 +19,10 @@ return new class extends Migration
             $table->timestamp('trial_ends_at')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->date('date_of_birth')->nullable();
             $table->string('vat_number')->unique();
+            $table->string('address')->nullable();
+            $table->string('phone')->nullable();
             $table->foreignId('company_id')->nullable()->constrained();
             $table->foreignId('branch_id')->nullable()->constrained();
             $table->foreignId('role_id')->nullable()->constrained();

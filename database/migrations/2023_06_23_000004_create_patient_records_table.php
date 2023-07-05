@@ -16,8 +16,13 @@ class CreatePatientRecordsTable extends Migration
         Schema::create('patient_records', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('branch_id');
-            $table->unsignedBigInteger('practitioner_id');
-            $table->string('patient_name');
+            $table->unsignedBigInteger('user_id');
+            $table->string('patient_first_name');
+            $table->string('patient_last_name');
+            $table->date('date_of_birth')->nullable();
+            $table->string('address')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('email')->nullable();
             $table->text('notes')->nullable();
             $table->text('medical_history')->nullable();
             $table->text('treatment_plan')->nullable();
@@ -26,7 +31,7 @@ class CreatePatientRecordsTable extends Migration
 
             // Foreign key constraints
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
-            $table->foreign('practitioner_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
