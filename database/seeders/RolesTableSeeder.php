@@ -18,7 +18,8 @@ class RolesTableSeeder extends Seeder
             ['name' => 'admin', 'description' => 'Administrator'],
             ['name' => 'psychologist', 'description' => 'Psychologist'],
             ['name' => 'counselor', 'description' => 'Mental Health Counselor'],
-            ['name' => 'coach', 'description' => 'Life Coach']
+            ['name' => 'coach', 'description' => 'Life Coach'],
+            ['name' => 'secretary', 'description' => 'Secretary']
         ];
 
         foreach ($roles as $role) {

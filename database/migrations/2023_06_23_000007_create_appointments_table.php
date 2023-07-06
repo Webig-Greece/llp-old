@@ -18,6 +18,7 @@ return new class extends Migration
             $table->dateTime('scheduled_date');
             $table->string('status');
             $table->text('notes')->nullable();
+            $table->string('location')->nullable();
             $table->boolean('recurring')->default(false);
             $table->string('recurring_interval')->nullable();
             $table->date('recurring_end_date')->nullable();

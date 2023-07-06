@@ -16,11 +16,31 @@ class CompaniesTableSeeder extends Seeder
     public function run()
     {
         DB::table('companies')->insert([
-            'name' => 'LifeLift Health Center',
+            'name' => 'Psychotherapy Health Center',
             'address' => '123 Wellness St, Health City',
             'phone' => '123-456-7890',
             'vat_number' => '999999999',
-            'email' => 'contact@lifelifthealthcenter.com',
+            'email' => 'contact@psychhealthcenter.com',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('companies')->insert([
+            'name' => 'Counselors Health Center',
+            'address' => '123 Wellness St, Health City',
+            'phone' => '123-456-7890',
+            'vat_number' => '999999998',
+            'email' => 'contact@counselorshealthcenter.com',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('companies')->insert([
+            'name' => 'Life Coaching & Health Center',
+            'address' => '123 Wellness St, Health City',
+            'phone' => '123-456-7890',
+            'vat_number' => '999999997',
+            'email' => 'contact@lifecoachinghealthcenter.com',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

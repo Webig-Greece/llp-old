@@ -20,7 +20,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->date('date_of_birth')->nullable();
-            $table->string('vat_number')->unique();
+            $table->string('vat_number')->unique()->nullable();
+            $table->boolean('is_freelancer')->nullable();
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
             $table->foreignId('company_id')->nullable()->constrained();

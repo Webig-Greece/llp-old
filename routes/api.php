@@ -29,27 +29,42 @@ Route::prefix('auth')->group(function () {
 Route::middleware('auth:api')->group(function () {
     Route::post('auth/logout', [AuthController::class, 'logout']);
     Route::get('auth/user-profile', [AuthController::class, 'userProfile']);
-    Route::get('dashboard', [DashboardController::class, 'getUserDetails']);
-    Route::post('create-subscription', [PaymentController::class, 'createSubscription']);
+
+    // Dashboard
+    Route::get('dashboard', [DashboardController::class, 'getUserDetails'])
+        ->middleware('permission:view_analytics');
+
+    // Payment and Subscription
+    Route::post('create-subscription', [PaymentController::class, 'createSubscription'])
+        ->middleware('permission:manage_subscriptions');
 });
 
 // Patient Records
-Route::middleware(['auth:api', 'permission:view_records'])->group(function () {
-    // Route::middleware(['auth:api'])->group(function () {
-    Route::get('patient-records', [PatientRecordController::class, 'index']);
-    Route::get('patient-records/{id}', [PatientRecordController::class, 'show']);
-    Route::post('patient-records', [PatientRecordController::class, 'store']);
-    Route::put('patient-records/{id}', [PatientRecordController::class, 'update']);
-    Route::delete('patient-records/{id}', [PatientRecordController::class, 'destroy']);
+Route::middleware(['auth:api'])->group(function () {
+    Route::get('patient-records', [PatientRecordController::class, 'index'])
+        ->middleware('permission:view_own_records');
+    Route::get('patient-records/{id}', [PatientRecordController::class, 'show'])
+        ->middleware('permission:view_own_records');
+    Route::post('patient-records', [PatientRecordController::class, 'store'])
+        ->middleware('permission:create_records');
+    Route::put('patient-records/{id}', [PatientRecordController::class, 'update'])
+        ->middleware('permission:edit_own_records');
+    Route::delete('patient-records/{id}', [PatientRecordController::class, 'destroy'])
+        ->middleware('permission:edit_own_records');
 });
 
 // Appointments
-Route::middleware(['auth:api', 'permission:create-appointment'])->group(function () {
-    Route::get('appointments', [AppointmentController::class, 'index']);
-    Route::get('appointments/{id}', [AppointmentController::class, 'show']);
-    Route::post('appointments', [AppointmentController::class, 'store']);
-    Route::put('appointments/{id}', [AppointmentController::class, 'update']);
-    Route::delete('appointments/{id}', [AppointmentController::class, 'destroy']);
+Route::middleware(['auth:api'])->group(function () {
+    Route::get('appointments', [AppointmentController::class, 'index'])
+        ->middleware('permission:manage_own_appointments');
+    Route::get('appointments/{id}', [AppointmentController::class, 'show'])
+        ->middleware('permission:manage_own_appointments');
+    Route::post('appointments', [AppointmentController::class, 'store'])
+        ->middleware('permission:manage_own_appointments');
+    Route::put('appointments/{id}', [AppointmentController::class, 'update'])
+        ->middleware('permission:manage_own_appointments');
+    Route::delete('appointments/{id}', [AppointmentController::class, 'destroy'])
+        ->middleware('permission:manage_own_appointments');
 });
 
 // Routes that require an active subscription here
