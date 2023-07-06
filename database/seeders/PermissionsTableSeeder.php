@@ -15,15 +15,23 @@ class PermissionsTableSeeder extends Seeder
     public function run()
     {
         $permissions = [
-            ['name' => 'view_records', 'description' => 'View Patient Records'],
-            ['name' => 'create_records', 'description' => 'Create Patient Records'],
-            ['name' => 'edit_records', 'description' => 'Edit Patient Records'],
-            ['name' => 'delete_records', 'description' => 'Delete Patient Records'],
-            ['name' => 'manage_users', 'description' => 'Manage Users']
+            'view_own_records',
+            'edit_own_records',
+            'create_records',
+            'transfer_records',
+            'view_all_records',
+            'manage_users',
+            'manage_subscriptions',
+            'view_analytics',
+            'send_communications',
+            'manage_own_appointments',
+            'manage_all_appointments'
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create($permission);
+            if (!Permission::where('name', $permission)->exists()) {
+                Permission::create(['name' => $permission]);
+            }
         }
     }
 }
