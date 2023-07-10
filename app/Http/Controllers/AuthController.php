@@ -8,9 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log;
+use App\Mail\PasswordResetMail;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 
 class AuthController extends Controller
@@ -205,6 +208,72 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'User restored successfully'
+        ]);
+    }
+
+    public function requestPasswordReset(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        // Generate a token for the password reset
+        $token = Str::random(60);
+
+        // Store the token in the password_reset_tokens table
+        DB::table('password_reset_tokens')->insert([
+            'email' => $user->email,
+            'token' => $token,
+            'created_at' => Carbon::now(),
+        ]);
+
+        // Send the password reset email
+        Mail::to($user->email)->send(new PasswordResetMail($token, $user));
+
+        return response()->json([
+            'message' => 'Password reset email sent.'
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|confirmed|min:6',
+        ]);
+
+        // Check if the token is valid
+        $tokenData = DB::table('password_reset_tokens')
+            ->where('token', $request->token)
+            ->where('email', $request->email)
+            ->first();
+
+        if (!$tokenData) {
+            return response()->json([
+                'message' => 'Invalid token.'
+            ], 400);
+        }
+
+        // Check if the token has expired
+        if (Carbon::parse($tokenData->created_at)->addMinutes(60)->isPast()) {
+            return response()->json([
+                'message' => 'Token has expired.'
+            ], 400);
+        }
+
+        // Update the user's password
+        $user = User::where('email', $request->email)->first();
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Delete the token
+        DB::table('password_reset_tokens')->where('email', $user->email)->delete();
+
+        return response()->json([
+            'message' => 'Password reset successful.'
         ]);
     }
 }
