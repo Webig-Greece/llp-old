@@ -22,6 +22,8 @@ return new class extends Migration
             $table->date('date_of_birth')->nullable();
             $table->string('vat_number')->unique()->nullable();
             $table->boolean('is_freelancer')->nullable();
+            $table->boolean('upgraded')->default(false);
+            $table->string('profession');
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
             $table->foreignId('company_id')->nullable()->constrained();

@@ -28,6 +28,7 @@ class UsersTableSeeder extends Seeder
             'vat_number' => '000000000',
             // 'trial_ends_at' => Carbon::now()->addDays(14),
             'email_verified_at' => Carbon::now(),
+            'profession' => 'admin',
             'role_id' => 1, // Assuming 1 is the role_id for admin
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -41,6 +42,7 @@ class UsersTableSeeder extends Seeder
             'password' => Hash::make('123456'),
             'trial_ends_at' => Carbon::now()->addDays(14),
             'email_verified_at' => Carbon::now(),
+            'profession' => 'psychologist',
             'role_id' => 2, // Assigning role_id for psychologist
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -55,6 +57,7 @@ class UsersTableSeeder extends Seeder
             'password' => Hash::make('123456'),
             'trial_ends_at' => Carbon::now()->addDays(14),
             'email_verified_at' => Carbon::now(),
+            'profession' => 'counselor',
             'role_id' => 3, // Assigning role_id for psychologist
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -69,6 +72,7 @@ class UsersTableSeeder extends Seeder
             'password' => Hash::make('123456'),
             'trial_ends_at' => Carbon::now()->addDays(14),
             'email_verified_at' => Carbon::now(),
+            'profession' => 'coach',
             'role_id' => 4, // Assigning role_id for psychologist
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -83,6 +87,7 @@ class UsersTableSeeder extends Seeder
             'password' => Hash::make('123456'),
             'trial_ends_at' => Carbon::now()->addDays(14),
             'email_verified_at' => Carbon::now(),
+            'profession' => 'secretary',
             'role_id' => 5, // Assigning role_id for secretary
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -98,6 +103,7 @@ class UsersTableSeeder extends Seeder
             'vat_number' => '000000010',
             // 'trial_ends_at' => Carbon::now()->addDays(14),
             'email_verified_at' => Carbon::now(),
+            'profession' => 'psychologist',
             'role_id' => 6, // Assuming 1 is the role_id for admin
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
