@@ -59,6 +59,14 @@ class AuthController extends Controller
             ], 401);
         }
 
+        // Check if the user is soft deleted
+        $user = Auth::user();
+        if ($user->deleted_at !== null) {
+            return response()->json([
+                'message' => 'This account has been deleted.'
+            ], 403);
+        }
+
         // $user = $request->user();
         $user = $request->user()->load('roles'); // Eager load the role
         $tokenResult = $user->createToken('Personal Access Token');
@@ -134,5 +142,69 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Successfully upgraded user!'
         ], 200);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = User::find(Auth::id());
+
+        // Validate the request data
+        $request->validate([
+            'first_name' => 'string|max:255',
+            'last_name' => 'string|max:255',
+            'email' => 'string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'string|min:8|confirmed',
+        ]);
+
+        // Update the user's profile
+        $user->first_name = $request->first_name ?? $user->first_name;
+        $user->last_name = $request->last_name ?? $user->last_name;
+        $user->email = $request->email ?? $user->email;
+
+        if ($request->password) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return response()->json(['message' => 'Profile updated successfully']);
+    }
+
+    public function deleteAccount(Request $request)
+    {
+        $user = User::find(Auth::id());
+
+        // Soft delete the user
+        $user->delete();
+
+        return response()->json(['message' => 'Account deleted successfully']);
+    }
+
+    public function restoreUser(Request $request, $deletedUserId)
+    {
+        $currentUser = User::find(Auth::id());
+
+        // Only allow admins to restore users
+        if (!$currentUser->hasRole('admin')) {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        // Find the user including soft deleted users
+        $deletedUser = User::withTrashed()->where('id', $deletedUserId)->first();
+
+        if (!$deletedUser) {
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        // Restore the user
+        $deletedUser->restore();
+
+        return response()->json([
+            'message' => 'User restored successfully'
+        ]);
     }
 }
