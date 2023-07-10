@@ -89,6 +89,21 @@ class UsersTableSeeder extends Seeder
             'company_id' => 1
         ]);
 
+        // Trial User
+        $user6 = User::create([
+            'first_name' => 'Trial',
+            'last_name' => 'User',
+            'email' => 'trial@example.com',
+            'password' => Hash::make('123456'),
+            'vat_number' => '000000010',
+            // 'trial_ends_at' => Carbon::now()->addDays(14),
+            'email_verified_at' => Carbon::now(),
+            'role_id' => 6, // Assuming 1 is the role_id for admin
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+            'company_id' => 1
+        ]);
+
 
         // Fetch roles
         $adminRole = Role::where('name', 'admin')->first();
@@ -96,6 +111,7 @@ class UsersTableSeeder extends Seeder
         $counselorRole = Role::where('name', 'counselor')->first();
         $coachRole = Role::where('name', 'coach')->first();
         $secretaryRole = Role::where('name', 'secretary')->first();
+        $trialUserRole = Role::where('name', 'trial_user')->first();
 
         // Fetch permissions
         $allPermissions = Permission::all()->pluck('id');
@@ -103,11 +119,21 @@ class UsersTableSeeder extends Seeder
             'view_own_records',
             'edit_own_records',
             'create_records',
-            'manage_own_appointments'
+            'manage_own_appointments',
+            'export_patient_data',
+            'import_patient_data'
         ])->pluck('id');
         $secretaryPermissions = Permission::whereIn('name', [
             'manage_all_appointments',
             'send_communications'
+        ])->pluck('id');
+        $trialUserPermissions = Permission::whereIn('name', [
+            'view_own_records',
+            'edit_own_records',
+            'create_records',
+            'manage_own_appointments',
+            // Trial Users cannot export patient
+            'import_patient_data'
         ])->pluck('id');
 
         // Associate permissions with roles
@@ -116,6 +142,7 @@ class UsersTableSeeder extends Seeder
         $counselorRole->permissions()->sync($therapistPermissions);
         $coachRole->permissions()->sync($therapistPermissions);
         $secretaryRole->permissions()->sync($secretaryPermissions);
+        $trialUserRole->permissions()->sync($trialUserPermissions);
 
         // Associate roles with users
         $user1->roles()->attach($adminRole);
@@ -123,5 +150,6 @@ class UsersTableSeeder extends Seeder
         $user3->roles()->attach($counselorRole);
         $user4->roles()->attach($coachRole);
         $user5->roles()->attach($secretaryRole);
+        $user6->roles()->attach($trialUserRole);
     }
 }

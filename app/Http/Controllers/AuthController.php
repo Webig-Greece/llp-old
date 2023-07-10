@@ -21,7 +21,6 @@ class AuthController extends Controller
             'name' => 'required|string',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|confirmed',
-            'role' => 'required|string|in:admin,psychologist,counselor,coach'
         ]);
 
         $user = new User([
@@ -34,8 +33,8 @@ class AuthController extends Controller
         $user->trial_ends_at = now()->addDays(10);
         $user->save();
 
-        // Assign selected role to new user
-        $role = Role::where('name', $request->role)->first();
+        // Assign default role to new user
+        $role = Role::where('name', 'trial_user')->first();
         $user->roles()->attach($role);
 
         // Send welcome email with verification link

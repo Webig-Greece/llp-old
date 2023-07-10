@@ -25,7 +25,9 @@ class PermissionsTableSeeder extends Seeder
             'view_analytics',
             'send_communications',
             'manage_own_appointments',
-            'manage_all_appointments'
+            'manage_all_appointments',
+            'export_patient_data',
+            'import_patient_data'
         ];
 
         foreach ($permissions as $permission) {
