@@ -99,4 +99,40 @@ class AuthController extends Controller
         // Return the user's profile
         return response()->json($request->user());
     }
+
+    public function upgrade(Request $request)
+    {
+        $user = User::find(Auth::id());
+
+        // Validate the request data
+        $request->validate([
+            'subscription_plan' => 'required|string', // The name of the subscription plan the user is upgrading to
+        ]);
+
+        // Get the role associated with the subscription plan
+        $role = Role::where('name', $request->subscription_plan)->first();
+
+        if (!$role) {
+            return response()->json([
+                'message' => 'Invalid subscription plan'
+            ], 400);
+        }
+
+        // If the user is currently a trial user, set subscribed_from_trial to true
+        if ($user->hasRole('trial_user')) {
+            $user->subscribed_from_trial = true;
+        }
+
+        // Update the user's role
+        $user->roles()->sync($role);
+
+        // Update the user's trial_ends_at field to null since they're no longer a trial user
+        $user->trial_ends_at = null;
+
+        $user->save();
+
+        return response()->json([
+            'message' => 'Successfully upgraded user!'
+        ], 200);
+    }
 }
