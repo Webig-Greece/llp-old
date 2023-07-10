@@ -30,6 +30,7 @@ class CreatePatientRecordsTable extends Migration
             $table->string('emergency_contact')->nullable();
             $table->string('gender')->nullable();
             $table->string('insurance_information')->nullable();
+            $table->string('status')->default('active');
             $table->timestamps();
 
             // Foreign key constraints

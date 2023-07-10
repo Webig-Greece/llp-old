@@ -19,7 +19,7 @@ class PatientRecordController extends Controller
      */
     public function index()
     {
-        return PatientRecord::where('practitioner_id', auth()->id())->with('branch')->paginate(10);
+        return PatientRecord::where('user_id', auth()->id())->with('branch')->paginate(10);
     }
 
     /**

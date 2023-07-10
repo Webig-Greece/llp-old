@@ -15,7 +15,7 @@ class PatientRecordsTableSeeder extends Seeder
     public function run()
     {
         DB::table('patient_records')->insert([
-            'user_id' => 1,
+            'user_id' => 2,
             'branch_id' => 1,
             'patient_first_name' => 'John',
             'patient_last_name' => 'Doe',

@@ -29,6 +29,7 @@ return new class extends Migration
             $table->foreignId('company_id')->nullable()->constrained();
             $table->foreignId('branch_id')->nullable()->constrained();
             $table->foreignId('role_id')->nullable()->constrained();
+            $table->string('status')->default('active');
             $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();

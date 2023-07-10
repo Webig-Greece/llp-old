@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('status');
             $table->text('notes')->nullable();
             $table->string('location')->nullable();
-            $table->boolean('recurring')->default(false);
+            $table->string('appointment_type')->nullable();
             $table->string('recurring_interval')->nullable();
             $table->date('recurring_end_date')->nullable();
             $table->timestamps();
