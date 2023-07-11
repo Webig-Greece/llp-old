@@ -11,16 +11,16 @@ class PatientRecordPolicy
 
     public function view(User $user, PatientRecord $patientRecord)
     {
-        return $user->id === $patientRecord->practitioner_id;
+        return $user->id === $patientRecord->user_id;
     }
 
     public function update(User $user, PatientRecord $patientRecord)
     {
-        return $user->id === $patientRecord->practitioner_id;
+        return $user->id === $patientRecord->user_id;
     }
 
     public function delete(User $user, PatientRecord $patientRecord)
     {
-        return $user->id === $patientRecord->practitioner_id;
+        return $user->id === $patientRecord->user_id;
     }
 }
