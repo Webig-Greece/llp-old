@@ -21,15 +21,22 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name' => 'required|string',
+            'firstName' => 'required|string',
+            'lastName' => 'required|string',
             'email' => 'required|string|email|unique:users',
-            'password' => 'required|string|confirmed',
+            'password' => 'required|string|confirmed|min:8',
+            'vatNumber' => 'required|string|min:9',
+            'acceptTerms' => 'required|accepted',
+            'profession' => 'required|in:psychologist,counselor,coach,psychiatrist',
         ]);
 
         $user = new User([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
+            'first_name' => $request->input('firstName'),
+            'last_name' => $request->input('lastName'),
+            'email' => $request->input('email'),
+            'password' => bcrypt($request->input('password')),
+            'vat_number' => $request->input('vatNumber'),
+            'profession' => $request->input('profession')
         ]);
 
         // Set the trial_ends_at field to 10 days from now
