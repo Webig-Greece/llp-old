@@ -28,6 +28,7 @@ class AuthController extends Controller
             'vatNumber' => 'required|string|min:9',
             'acceptTerms' => 'required|accepted',
             'profession' => 'required|in:psychologist,counselor,coach,psychiatrist',
+            'roleIdentity' => 'required|in:freelancer,company',
         ]);
 
         $user = new User([
@@ -38,6 +39,9 @@ class AuthController extends Controller
             'vat_number' => $request->input('vatNumber'),
             'profession' => $request->input('profession')
         ]);
+
+        // Sets is_freelancer flag accordingly
+        $user->is_freelancer = ($request->roleIdentity == "freelancer");
 
         // Set the trial_ends_at field to 10 days from now
         $user->trial_ends_at = now()->addDays(10);
