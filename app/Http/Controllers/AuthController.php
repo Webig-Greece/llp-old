@@ -29,6 +29,7 @@ class AuthController extends Controller
             'acceptTerms' => 'required|accepted',
             'profession' => 'required|in:psychologist,counselor,coach,psychiatrist',
             'roleIdentity' => 'required|in:freelancer,company',
+            'language' => 'required|string|min:2'
         ]);
 
         $user = new User([
@@ -42,6 +43,8 @@ class AuthController extends Controller
 
         // Sets is_freelancer flag accordingly
         $user->is_freelancer = ($request->roleIdentity == "freelancer");
+        // Sets Language preference to user account from registration
+        $user->language = $request->language;
 
         // Set the trial_ends_at field to 10 days from now
         $user->trial_ends_at = now()->addDays(10);
@@ -69,7 +72,7 @@ class AuthController extends Controller
 
         if (!Auth::attempt($request->only(['email', 'password']))) {
             return response()->json([
-                'message' => 'Unauthorized'
+                'message' => 'Wrong username or password'
             ], 401);
         }
 

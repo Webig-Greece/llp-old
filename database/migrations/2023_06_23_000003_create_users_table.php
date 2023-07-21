@@ -26,6 +26,7 @@ return new class extends Migration
             $table->enum('profession', ['psychologist', 'counselor', 'coach', 'psychiatrist']);
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
+            $table->string('language')->nullable();
             $table->foreignId('company_id')->nullable()->constrained();
             $table->foreignId('branch_id')->nullable()->constrained();
             $table->foreignId('role_id')->nullable()->constrained();
