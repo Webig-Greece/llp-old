@@ -93,3 +93,6 @@ Route::post('email/resend', function (Request $request) {
 
 // Handle Stripe Webhook
 Route::post('stripe/webhook', [PaymentController::class, 'handleWebhook']);
+
+Route::post('/create-secretary', [AuthController::class, 'createSecretary'])->middleware('auth:sanctum');
+

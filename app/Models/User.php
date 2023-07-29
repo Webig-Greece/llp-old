@@ -109,4 +109,10 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->stripe_subscription_id = $subscriptionId;
         $this->save();
     }
+
+    
+    public function isProfessional()
+    {
+        return in_array($this->profession, ['psychologist', 'counselor', 'coach', 'psychiatrist']);
+    }
 }

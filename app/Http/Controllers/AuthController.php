@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -29,8 +30,25 @@ class AuthController extends Controller
             'acceptTerms' => 'required|accepted',
             'profession' => 'required|in:psychologist,counselor,coach,psychiatrist',
             'roleIdentity' => 'required|in:freelancer,company',
-            'language' => 'required|string|min:2'
+            'language' => 'required|string|min:2',
+            'company_name' => 'nullable|string'
         ]);
+
+        if ($request->input('roleIdentity') == 'freelancer') {
+            // Create a new freelancer company
+            $company = new Company([
+                'name' => $request->input('firstName') . ' ' . $request->input('lastName'), // You can change this according to your needs
+                'vat_number' => $request->input('vatNumber'),
+            ]);
+            $company->save();
+        } else if ($request->input('roleIdentity') == 'company') {
+            // Create a new company
+            $company = new Company([
+                'name' => $request->input('company_name'),
+                'vat_number' => $request->input('vatNumber'),
+            ]);
+            $company->save();
+        }
 
         $user = new User([
             'first_name' => $request->input('firstName'),
@@ -38,7 +56,8 @@ class AuthController extends Controller
             'email' => $request->input('email'),
             'password' => bcrypt($request->input('password')),
             'vat_number' => $request->input('vatNumber'),
-            'profession' => $request->input('profession')
+            'profession' => $request->input('profession'),
+            'company_id' => $company->id, // Set the company_id to the ID of the newly created company
         ]);
 
         // Sets is_freelancer flag accordingly
@@ -132,6 +151,7 @@ class AuthController extends Controller
         // Validate the request data
         $request->validate([
             'subscription_plan' => 'required|string', // The name of the subscription plan the user is upgrading to
+            'additional_secretaries' => 'nullable|integer|min:0', // The number of additional secretary accounts the user wants to add
         ]);
 
         // Get the role associated with the subscription plan
@@ -154,12 +174,18 @@ class AuthController extends Controller
         // Update the user's trial_ends_at field to null since they're no longer a trial user
         $user->trial_ends_at = null;
 
+        // If the user wants to add additional secretary accounts, update their max_secretaries field
+        if ($request->additional_secretaries) {
+            $user->max_secretaries += $request->additional_secretaries;
+        }
+
         $user->save();
 
         return response()->json([
             'message' => 'Successfully upgraded user!'
         ], 200);
     }
+
 
     public function updateProfile(Request $request)
     {
@@ -290,4 +316,53 @@ class AuthController extends Controller
             'message' => 'Password reset successful.'
         ]);
     }
+
+    public function addSecretary(Request $request)
+    {
+        $request->validate([
+            'firstName' => 'required|string',
+            'lastName' => 'required|string',
+            'email' => 'required|string|email|unique:users',
+            'password' => 'required|string|confirmed|min:8',
+            'profession' => 'required|in:secretary',
+        ]);
+    
+        // Only allow professionals to add secretaries
+        $user = Auth::user();
+        $profession = Auth::user()->profession;
+    
+        if (!$profession->isProfessional()) {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+    
+        // Check if the professional user has reached their maximum number of secretary accounts
+        $secretaryCount = User::where('company_id', $user->company_id)->where('profession', 'secretary')->count();
+        if ($secretaryCount >= $user->max_secretaries) {
+            return response()->json([
+                'message' => 'You have reached your maximum number of secretary accounts.'
+            ], 400);
+        }
+    
+        $secretary = new User([
+            'first_name' => $request->input('firstName'),
+            'last_name' => $request->input('lastName'),
+            'email' => $request->input('email'),
+            'password' => bcrypt($request->input('password')),
+            'profession' => $request->input('profession'),
+            'company_id' => $user->company_id, // Set the company_id to the ID of the professional's company
+        ]);
+    
+        $secretary->save();
+    
+        // Assign secretary role to new user
+        $role = Role::where('name', 'secretary')->first();
+        $secretary->roles()->attach($role);
+    
+        return response()->json([
+            'message' => 'Successfully added secretary!'
+        ], 201);
+    }
+    
 }

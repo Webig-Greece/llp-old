@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('vat_number')->unique()->nullable();
             $table->boolean('is_freelancer')->nullable();
             $table->boolean('subscribed_from_trial')->default(false);
-            $table->enum('profession', ['admin', 'psychologist', 'counselor', 'coach', 'psychiatrist']);
+            $table->enum('profession', ['psychologist', 'counselor', 'coach', 'psychiatrist'])->nullable();
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
             $table->string('language')->nullable();
