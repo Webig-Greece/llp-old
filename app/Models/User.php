@@ -133,6 +133,13 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         // Check the user's account type and other relevant conditions
         // Example: Check if the user is a professional and has a specific subscription plan
-        return $this->account_type == 'main_professional' && $this->subscriptionPlanAllowsAdditionalAccounts();
+        return $this->account_type == 'main' && $this->subscriptionPlanAllowsAdditionalAccounts();
+    }
+
+    public function subscriptionPlanAllowsAdditionalAccounts()
+    {
+        // Check the user's subscription plan and return true or false
+        // Example:
+        return $this->subscriptionPlan->allows_additional_professional_accounts;
     }
 }
