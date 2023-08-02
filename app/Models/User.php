@@ -138,8 +138,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function subscriptionPlanAllowsAdditionalAccounts()
     {
-        // Check the user's subscription plan and return true or false
-        // Example:
-        return $this->subscriptionPlan->allows_additional_professional_accounts;
+        return $this->subscriptionPlan->allowsAdditionalProfessionalAccounts();
     }
 }

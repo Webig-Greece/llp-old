@@ -23,4 +23,9 @@ class SubscriptionPlan extends Model
     {
         return $this->hasMany(Company::class);
     }
+
+    public function allowsAdditionalProfessionalAccounts()
+    {
+        return $this->allows_additional_professional_accounts;
+    }
 }

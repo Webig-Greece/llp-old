@@ -13,10 +13,13 @@ class ProfessionalAccountService
     {
         // Validate the input data
         $validatedData = Validator::make($data, [
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
-            'email' => 'required|string|email|unique:users',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
             'profession' => 'required|in:psychologist,counselor,coach,psychiatrist',
+            'address' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'language' => 'nullable|string|max:10',
             // Add other necessary fields
         ])->validate();
 
@@ -38,9 +41,12 @@ class ProfessionalAccountService
             'last_name' => $validatedData['last_name'],
             'email' => $validatedData['email'],
             'profession' => $validatedData['profession'],
-            'company_id' => $user->company_id, // Associate with the main account's company
-            'branch_id' => $user->branch_id, // Associate with the main account's branch
-            'status' => 'active', // Set the status as active
+            'company_id' => $user->company_id,
+            'branch_id' => $user->branch_id,
+            'status' => 'active',
+            'address' => $validatedData['address'] ?? null,
+            'phone' => $validatedData['phone'] ?? null,
+            'language' => $validatedData['language'] ?? null,
             // Add other necessary fields if required
         ]);
 
