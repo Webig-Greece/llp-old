@@ -24,6 +24,7 @@ return new class extends Migration
             $table->boolean('is_freelancer')->nullable();
             $table->boolean('subscribed_from_trial')->default(false);
             $table->enum('profession', ['psychologist', 'counselor', 'coach', 'psychiatrist'])->nullable();
+            $table->enum('account_type', ['main', 'secondary'])->default('main');
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
             $table->string('language')->nullable();

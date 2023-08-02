@@ -128,4 +128,11 @@ class User extends Authenticatable implements MustVerifyEmail
         // Check if the user has the specified permission
         return $this->roles->pluck('permissions')->flatten()->pluck('name')->contains($permissionName);
     }
+
+    public function canCreateAdditionalProfessionalAccount()
+    {
+        // Check the user's account type and other relevant conditions
+        // Example: Check if the user is a professional and has a specific subscription plan
+        return $this->account_type == 'main_professional' && $this->subscriptionPlanAllowsAdditionalAccounts();
+    }
 }
