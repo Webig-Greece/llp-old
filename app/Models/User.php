@@ -21,6 +21,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'vat_number',
         'accept_terms',
+        'account_type',
         'profession',
         'company_id',
         'branch_id',
@@ -110,9 +111,21 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->save();
     }
 
-    
+
     public function isProfessional()
     {
         return in_array($this->profession, ['psychologist', 'counselor', 'coach', 'psychiatrist']);
+    }
+
+    public function canCreateBranch()
+    {
+        // Check if the user has the 'create-branch' permission
+        return $this->hasPermission('create-branch');
+    }
+
+    public function hasPermission($permissionName)
+    {
+        // Check if the user has the specified permission
+        return $this->roles->pluck('permissions')->flatten()->pluck('name')->contains($permissionName);
     }
 }
