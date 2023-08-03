@@ -12,6 +12,7 @@ class ProfessionalAccountService
 {
     public function createSecondaryProfessionalAccount(CreateSecondaryProfessionalAccountRequest $request)
     {
+        $validatedData = $request->validated();
         // Get the authenticated user
         $user = User::find(Auth::id());
 
@@ -26,16 +27,16 @@ class ProfessionalAccountService
         // Create the secondary professional account
         $secondaryAccount = new User([
             'account_type' => 'secondary',
-            'first_name' => $request['first_name'],
-            'last_name' => $request['last_name'],
-            'email' => $request['email'],
-            'profession' => $request['profession'],
+            'first_name' => $validatedData['first_name'],
+            'last_name' => $validatedData['last_name'],
+            'email' => $validatedData['email'],
+            'profession' => $validatedData['profession'],
             'company_id' => $user->company_id,
             'branch_id' => $user->branch_id,
             'status' => 'active',
-            'address' => $request['address'] ?? null,
-            'phone' => $request['phone'] ?? null,
-            'language' => $request['language'] ?? null,
+            'address' => $validatedData['address'] ?? null,
+            'phone' => $validatedData['phone'] ?? null,
+            'language' => $validatedData['language'] ?? null,
             // Add other necessary fields if required
         ]);
 
