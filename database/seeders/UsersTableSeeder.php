@@ -28,7 +28,6 @@ class UsersTableSeeder extends Seeder
             'vat_number' => '000000000',
             // 'trial_ends_at' => Carbon::now()->addDays(14),
             'email_verified_at' => Carbon::now(),
-            'profession' => 'admin',
             'role_id' => 1, // Assuming 1 is the role_id for admin
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -43,6 +42,7 @@ class UsersTableSeeder extends Seeder
             'trial_ends_at' => Carbon::now()->addDays(14),
             'email_verified_at' => Carbon::now(),
             'profession' => 'psychologist',
+            'account_type' => 'main',
             'role_id' => 2, // Assigning role_id for psychologist
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -58,6 +58,7 @@ class UsersTableSeeder extends Seeder
             'trial_ends_at' => Carbon::now()->addDays(14),
             'email_verified_at' => Carbon::now(),
             'profession' => 'counselor',
+            'account_type' => 'main',
             'role_id' => 3, // Assigning role_id for psychologist
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -73,6 +74,23 @@ class UsersTableSeeder extends Seeder
             'trial_ends_at' => Carbon::now()->addDays(14),
             'email_verified_at' => Carbon::now(),
             'profession' => 'coach',
+            'account_type' => 'main',
+            'role_id' => 4, // Assigning role_id for psychologist
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+            'company_id' => 3
+        ]);
+
+        // Psychiatrist User
+        $user5 = User::create([
+            'first_name' => 'User5',
+            'last_name' => 'Example',
+            'email' => 'user5@example.com',
+            'password' => Hash::make('123456'),
+            'trial_ends_at' => Carbon::now()->addDays(14),
+            'email_verified_at' => Carbon::now(),
+            'profession' => 'psychiatrist',
+            'account_type' => 'main',
             'role_id' => 4, // Assigning role_id for psychologist
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -80,14 +98,14 @@ class UsersTableSeeder extends Seeder
         ]);
 
         // Secretary User
-        $user5 = User::create([
+        $user6 = User::create([
             'first_name' => 'Secretary',
             'last_name' => 'User',
             'email' => 'secretary@example.com',
             'password' => Hash::make('123456'),
             'trial_ends_at' => Carbon::now()->addDays(14),
             'email_verified_at' => Carbon::now(),
-            'profession' => 'secretary',
+            'account_type' => 'secondary',
             'role_id' => 5, // Assigning role_id for secretary
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -95,7 +113,7 @@ class UsersTableSeeder extends Seeder
         ]);
 
         // Trial User
-        $user6 = User::create([
+        $user7 = User::create([
             'first_name' => 'Trial',
             'last_name' => 'User',
             'email' => 'trial@example.com',
@@ -116,6 +134,7 @@ class UsersTableSeeder extends Seeder
         $psychologistRole = Role::where('name', 'psychologist')->first();
         $counselorRole = Role::where('name', 'counselor')->first();
         $coachRole = Role::where('name', 'coach')->first();
+        $psychiatristRole = Role::where('name', 'psychiatrist')->first();
         $secretaryRole = Role::where('name', 'secretary')->first();
         $trialUserRole = Role::where('name', 'trial_user')->first();
 
@@ -147,6 +166,7 @@ class UsersTableSeeder extends Seeder
         $psychologistRole->permissions()->sync($therapistPermissions);
         $counselorRole->permissions()->sync($therapistPermissions);
         $coachRole->permissions()->sync($therapistPermissions);
+        $psychiatristRole->permissions()->sync($therapistPermissions);
         $secretaryRole->permissions()->sync($secretaryPermissions);
         $trialUserRole->permissions()->sync($trialUserPermissions);
 
@@ -155,7 +175,8 @@ class UsersTableSeeder extends Seeder
         $user2->roles()->attach($psychologistRole);
         $user3->roles()->attach($counselorRole);
         $user4->roles()->attach($coachRole);
-        $user5->roles()->attach($secretaryRole);
-        $user6->roles()->attach($trialUserRole);
+        $user5->roles()->attach($psychiatristRole);
+        $user6->roles()->attach($secretaryRole);
+        $user7->roles()->attach($trialUserRole);
     }
 }

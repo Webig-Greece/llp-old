@@ -5,24 +5,13 @@ namespace App\Services;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\CreateSecondaryProfessionalAccountRequest;
 
 
 class ProfessionalAccountService
 {
-    public function createSecondaryProfessionalAccount($data)
+    public function createSecondaryProfessionalAccount(CreateSecondaryProfessionalAccountRequest $request)
     {
-        // Validate the input data
-        $validatedData = Validator::make($data, [
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'profession' => 'required|in:psychologist,counselor,coach,psychiatrist',
-            'address' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:20',
-            'language' => 'nullable|string|max:10',
-            // Add other necessary fields
-        ])->validate();
-
         // Get the authenticated user
         $user = User::find(Auth::id());
 
@@ -37,16 +26,16 @@ class ProfessionalAccountService
         // Create the secondary professional account
         $secondaryAccount = new User([
             'account_type' => 'secondary',
-            'first_name' => $validatedData['first_name'],
-            'last_name' => $validatedData['last_name'],
-            'email' => $validatedData['email'],
-            'profession' => $validatedData['profession'],
+            'first_name' => $request['first_name'],
+            'last_name' => $request['last_name'],
+            'email' => $request['email'],
+            'profession' => $request['profession'],
             'company_id' => $user->company_id,
             'branch_id' => $user->branch_id,
             'status' => 'active',
-            'address' => $validatedData['address'] ?? null,
-            'phone' => $validatedData['phone'] ?? null,
-            'language' => $validatedData['language'] ?? null,
+            'address' => $request['address'] ?? null,
+            'phone' => $request['phone'] ?? null,
+            'language' => $request['language'] ?? null,
             // Add other necessary fields if required
         ]);
 
