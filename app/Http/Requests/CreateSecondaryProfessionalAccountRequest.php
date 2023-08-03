@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class CreateSecondaryProfessionalAccountRequest extends FormRequest
 {
@@ -11,7 +13,11 @@ class CreateSecondaryProfessionalAccountRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // Get the authenticated user
+        $user = User::find(Auth::id());
+
+        // Check if the user can create an additional professional account
+        return $user->canCreateAdditionalProfessionalAccount();
     }
 
     /**
