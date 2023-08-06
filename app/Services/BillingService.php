@@ -7,19 +7,30 @@ use App\Models\User;
 
 class BillingService
 {
+    const SECRETARY_ACCOUNT_CHARGE = 3; // €3 for secretary account
+    const EXTRA_PROFESSIONAL_ACCOUNT_CHARGE = 5; // €5 for extra professional account
+
     /**
      * Calculate the total subscription price for a company.
      *
      * @param  \App\Models\Company  $company
      * @return float
      */
+
     public function calculateCompanySubscriptionPrice(Company $company)
     {
         $basePrice = $company->subscriptionPlan->price;
         $pricePerUser = $company->subscriptionPlan->price_per_user;
-        $numberOfUsers = $company->users->count();
 
-        return $basePrice + ($pricePerUser * $numberOfUsers);
+        $totalUsers = $company->users->count();
+        $totalSecretaryAccounts = User::where('role', 'secretary')->where('company_id', $user->company_id)->count();
+        $totalExtraProfessionalAccounts = User::where('role', 'professional')->where('company_id', $user->company_id)->count();
+
+        $totalPrice = $basePrice + ($totalUsers * $pricePerUser);
+        $totalPrice += ($totalSecretaryAccounts * self::SECRETARY_ACCOUNT_CHARGE);
+        $totalPrice += ($totalExtraProfessionalAccounts * self::EXTRA_PROFESSIONAL_ACCOUNT_CHARGE);
+
+        return $totalPrice;
     }
 
     /**
