@@ -23,8 +23,8 @@ class BillingService
         $pricePerUser = $company->subscriptionPlan->price_per_user;
 
         $totalUsers = $company->users->count();
-        $totalSecretaryAccounts = User::where('role', 'secretary')->where('company_id', $user->company_id)->count();
-        $totalExtraProfessionalAccounts = User::where('role', 'professional')->where('company_id', $user->company_id)->count();
+        $totalSecretaryAccounts = $company->users->where('role', 'secretary')->count();
+        $totalExtraProfessionalAccounts = $company->users->where('role', 'professional')->count();
 
         $totalPrice = $basePrice + ($totalUsers * $pricePerUser);
         $totalPrice += ($totalSecretaryAccounts * self::SECRETARY_ACCOUNT_CHARGE);
