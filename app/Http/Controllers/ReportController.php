@@ -9,12 +9,18 @@ class ReportController extends Controller
 {
     public function patientTreatmentSummary(Request $request)
     {
+        // Ensure user_id is provided and matches authenticated user
+        $userId = $request->input('user_id');
+        if (!$userId || auth()->user()->id != $userId) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $reportData = DB::table('patients')
             ->join('treatments', 'patients.id', '=', 'treatments.patient_id')
             ->join('appointments', 'patients.id', '=', 'appointments.patient_id')
-            ->select('patients.name as patient_name', 'treatments.type as treatment_type', 'appointments.date as appointment_date')
+            ->select('patients.name as patient_name', 'treatments.template_type as treatment_type', 'appointments.date as appointment_date')
+            ->where('patients.user_id', $userId) // Ensure the report only includes data related to the authenticated user
             ->get();
-
 
         $report = [];
         foreach ($reportData as $row) {
@@ -29,31 +35,33 @@ class ReportController extends Controller
 
     public function appointmentStatistics(Request $request)
     {
+        // Ensure user_id is provided and matches authenticated user
+        $userId = $request->input('user_id');
+        if (!$userId || auth()->user()->id != $userId) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         // Apply filters based on date range, patient, practitioner, and status
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $patientId = $request->input('patient_id');
-        $practitionerId = $request->input('practitioner_id');
         $status = $request->input('status');
 
         $query = DB::table('appointments')
             ->select(DB::raw('status, COUNT(*) as count'))
+            ->where('user_id', $userId) // Filtering by user_id (practitioner)
             ->groupBy('status');
 
         if ($startDate) {
-            $query->where('date', '>=', $startDate);
+            $query->where('scheduled_date', '>=', $startDate);
         }
 
         if ($endDate) {
-            $query->where('date', '<=', $endDate);
+            $query->where('scheduled_date', '<=', $endDate);
         }
 
         if ($patientId) {
             $query->where('patient_id', $patientId);
-        }
-
-        if ($practitionerId) {
-            $query->where('practitioner_id', $practitionerId);
         }
 
         if ($status) {
