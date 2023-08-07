@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
             $table->string('language')->nullable();
+            $table->enum('default_template', ['BIRP', 'DAP'])->default('BIRP');
             $table->foreignId('company_id')->nullable()->constrained();
             $table->foreignId('branch_id')->nullable()->constrained();
             $table->foreignId('role_id')->nullable()->constrained();

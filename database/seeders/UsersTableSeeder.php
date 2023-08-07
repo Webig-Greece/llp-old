@@ -43,7 +43,7 @@ class UsersTableSeeder extends Seeder
             'email_verified_at' => Carbon::now(),
             'profession' => 'psychologist',
             'account_type' => 'main',
-            'role_id' => 2, // Assigning role_id for psychologist
+            'role_id' => 2, // Assigning role_id for Psychologist
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
             'company_id' => 1
@@ -59,7 +59,7 @@ class UsersTableSeeder extends Seeder
             'email_verified_at' => Carbon::now(),
             'profession' => 'counselor',
             'account_type' => 'main',
-            'role_id' => 3, // Assigning role_id for psychologist
+            'role_id' => 3, // Assigning role_id for Counselor
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
             'company_id' => 2
@@ -75,7 +75,7 @@ class UsersTableSeeder extends Seeder
             'email_verified_at' => Carbon::now(),
             'profession' => 'coach',
             'account_type' => 'main',
-            'role_id' => 4, // Assigning role_id for psychologist
+            'role_id' => 4, // Assigning role_id for Coach
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
             'company_id' => 3
@@ -91,7 +91,7 @@ class UsersTableSeeder extends Seeder
             'email_verified_at' => Carbon::now(),
             'profession' => 'psychiatrist',
             'account_type' => 'main',
-            'role_id' => 4, // Assigning role_id for psychologist
+            'role_id' => 4, // Assigning role_id for Psychiatrist
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
             'company_id' => 3
@@ -106,7 +106,7 @@ class UsersTableSeeder extends Seeder
             'trial_ends_at' => Carbon::now()->addDays(14),
             'email_verified_at' => Carbon::now(),
             'account_type' => 'secondary',
-            'role_id' => 5, // Assigning role_id for secretary
+            'role_id' => 5, // Assigning role_id for Secretary
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
             'company_id' => 1

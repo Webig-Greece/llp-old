@@ -45,6 +45,23 @@ Route::middleware(['auth:api', 'permission:manage_subscriptions'])->group(functi
 
 Route::post('stripe/webhook', [PaymentController::class, 'handleWebhook']);
 
+Route::apiResource('treatments', 'TreatmentController')->middleware('auth:api');
+
+
+// Reports
+Route::get('reports/patient-treatment-summary', 'ReportController@patientTreatmentSummary')
+    ->middleware('auth:api', 'permission:view_reports');
+Route::get('reports/appointment-statistics', 'ReportController@appointmentStatistics')
+    ->middleware('auth:api', 'permission:view_reports');
+Route::get('reports/financial-reports', 'ReportController@financialReports')
+    ->middleware('auth:api', 'permission:view_reports');
+Route::get('reports/professional-performance-analytics', 'ReportController@professionalPerformanceAnalytics')
+    ->middleware('auth:api', 'permission:view_reports');
+Route::get('reports/usage-statistics', 'ReportController@usageStatistics')
+    ->middleware('auth:api', 'permission:view_reports');
+
+
+
 
 // // User Auth
 // Route::prefix('auth')->group(function () {

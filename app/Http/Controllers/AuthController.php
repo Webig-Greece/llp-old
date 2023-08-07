@@ -197,12 +197,14 @@ class AuthController extends Controller
             'last_name' => 'string|max:255',
             'email' => 'string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'string|min:8|confirmed',
+            'default_template' => 'required|in:BIRP,DAP',
         ]);
 
         // Update the user's profile
         $user->first_name = $request->first_name ?? $user->first_name;
         $user->last_name = $request->last_name ?? $user->last_name;
         $user->email = $request->email ?? $user->email;
+        $user->default_template  = $request->default_template ?? $user->default_template;
 
         if ($request->password) {
             $user->password = Hash::make($request->password);
@@ -212,6 +214,7 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Profile updated successfully']);
     }
+
 
     public function deleteAccount(Request $request)
     {
@@ -326,17 +329,17 @@ class AuthController extends Controller
             'password' => 'required|string|confirmed|min:8',
             'profession' => 'required|in:secretary',
         ]);
-    
+
         // Only allow professionals to add secretaries
         $user = Auth::user();
         $profession = Auth::user()->profession;
-    
+
         if (!$profession->isProfessional()) {
             return response()->json([
                 'message' => 'Unauthorized'
             ], 403);
         }
-    
+
         // Check if the professional user has reached their maximum number of secretary accounts
         $secretaryCount = User::where('company_id', $user->company_id)->where('profession', 'secretary')->count();
         if ($secretaryCount >= $user->max_secretaries) {
@@ -344,7 +347,7 @@ class AuthController extends Controller
                 'message' => 'You have reached your maximum number of secretary accounts.'
             ], 400);
         }
-    
+
         $secretary = new User([
             'first_name' => $request->input('firstName'),
             'last_name' => $request->input('lastName'),
@@ -353,16 +356,15 @@ class AuthController extends Controller
             'profession' => $request->input('profession'),
             'company_id' => $user->company_id, // Set the company_id to the ID of the professional's company
         ]);
-    
+
         $secretary->save();
-    
+
         // Assign secretary role to new user
         $role = Role::where('name', 'secretary')->first();
         $secretary->roles()->attach($role);
-    
+
         return response()->json([
             'message' => 'Successfully added secretary!'
         ], 201);
     }
-    
 }

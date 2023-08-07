@@ -23,6 +23,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'accept_terms',
         'account_type',
         'profession',
+        'default_template',
         'company_id',
         'branch_id',
     ];
