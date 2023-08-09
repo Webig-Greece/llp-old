@@ -32,11 +32,11 @@ class PatientRecordController extends Controller
     {
         $request->validate([
             'branch_id' => 'required|integer|exists:branches,id',
-            'patient_name' => 'required|string|max:255',
-            'notes' => 'nullable|string',
-            'medical_history' => 'nullable|string',
-            'treatment_plan' => 'nullable|string',
-            'next_appointment' => 'nullable|date'
+            'patient_name' => 'required|string|max:255|min:3',
+            'notes' => 'nullable|string|max:1000',
+            'medical_history' => 'nullable|string|max:2000',
+            'treatment_plan' => 'nullable|string|max:2000',
+            'next_appointment' => 'nullable|date|after:today'
         ]);
 
         $patientRecord = new PatientRecord($request->all());
@@ -74,15 +74,14 @@ class PatientRecordController extends Controller
     {
         $request->validate([
             'branch_id' => 'sometimes|required|integer|exists:branches,id',
-            'patient_name' => 'sometimes|required|string|max:255',
-            'notes' => 'nullable|string',
-            'medical_history' => 'nullable|string',
-            'treatment_plan' => 'nullable|string',
-            'next_appointment' => 'nullable|date'
+            'patient_name' => 'sometimes|required|string|max:255|min:3',
+            'notes' => 'nullable|string|max:1000',
+            'medical_history' => 'nullable|string|max:2000',
+            'treatment_plan' => 'nullable|string|max:2000',
+            'next_appointment' => 'nullable|date|after:today'
         ]);
 
         $this->authorize('update', $patientRecord);
-        // Check if the authenticated user's ID matches the user_id of the patient record
         if (auth()->user()->id !== $patientRecord->user_id) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }

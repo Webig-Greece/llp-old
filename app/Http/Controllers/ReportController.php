@@ -88,6 +88,12 @@ class ReportController extends Controller
 
     public function financialReports(Request $request)
     {
+        // Ensure user_id is provided and matches authenticated user
+        $userId = $request->input('user_id');
+        if (!$userId || auth()->user()->id != $userId) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         // Apply filters based on date range and subscription plan
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
