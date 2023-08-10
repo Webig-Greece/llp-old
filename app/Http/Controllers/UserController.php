@@ -27,6 +27,20 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', User::class);
+
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'vat_number' => 'required|string|max:50|unique:users',
+            'account_type' => 'required|string|in:professional,admin',
+            'profession' => 'nullable|string|max:255',
+            'company_id' => 'nullable|integer|exists:companies,id',
+            'branch_id' => 'nullable|integer|exists:branches,id',
+        ]);
+
         $user = User::create($request->all());
 
         return response()->json($user, 201);
@@ -55,6 +69,20 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
+        $this->authorize('update', $user);
+
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:8',
+            'vat_number' => 'required|string|max:50|unique:users,vat_number,' . $id,
+            'account_type' => 'required|string|in:professional,admin',
+            'profession' => 'nullable|string|max:255',
+            'company_id' => 'nullable|integer|exists:companies,id',
+            'branch_id' => 'nullable|integer|exists:branches,id',
+        ]);
+
         $user->update($request->all());
 
         return response()->json($user, 200);
@@ -68,6 +96,8 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
+        $user = User::findOrFail($id);
+        $this->authorize('delete', $user);
         User::destroy($id);
 
         return response()->json(null, 204);
