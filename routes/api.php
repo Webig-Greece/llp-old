@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PatientRecordController;
 use App\Http\Controllers\AppointmentController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\BranchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +32,10 @@ Route::middleware('auth:api')->group(function () {
     Route::get('auth/user-profile', [AuthController::class, 'userProfile']);
     Route::post('/users/create-secretary', [AuthController::class, 'createSecretary']);
     Route::post('/users/create-secondary-professional', [AuthController::class, 'createSecondaryProfessionalAccount']);
+
+    Route::middleware(['account_type:main'])->group(function () {
+        Route::apiResource('branches', BranchController::class);
+    });
 });
 
 Route::prefix('auth')->group(function () {
@@ -46,7 +51,6 @@ Route::middleware(['auth:api', 'permission:manage_subscriptions'])->group(functi
 Route::post('stripe/webhook', [PaymentController::class, 'handleWebhook']);
 
 Route::apiResource('treatments', 'TreatmentController')->middleware('auth:api');
-
 
 // Reports
 Route::get('reports/patient-treatment-summary', 'ReportController@patientTreatmentSummary')

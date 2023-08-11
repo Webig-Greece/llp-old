@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use Illuminate\Http\Request;
+use App\Exceptions\Company\CompanyNotFoundException;
 
 class CompanyController extends Controller
 {
@@ -34,17 +35,29 @@ class CompanyController extends Controller
 
         $company = Company::create($request->all());
 
-        return response()->json($company, 201);
+        return apiResponse($company, 'Company created successfully', 201);
     }
 
 
-    public function show(Company $company)
+    public function show($id)
     {
-        return $company;
+        $company = Company::find($id);
+
+        if (!$company) {
+            throw new CompanyNotFoundException();
+        }
+
+        return apiResponse($company);
     }
 
-    public function update(Request $request, Company $company)
+    public function update(Request $request, $id)
     {
+        $company = Company::find($id);
+
+        if (!$company) {
+            throw new CompanyNotFoundException();
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'vat_number' => 'required|string|max:50|unique:companies,vat_number,' . $company->id,
@@ -58,13 +71,19 @@ class CompanyController extends Controller
 
         $company->update($request->all());
 
-        return response()->json($company, 200);
+        return apiResponse($company, 'Company updated successfully', 200);
     }
 
 
-    public function destroy(Company $company)
+    public function destroy($id)
     {
+        $company = Company::find($id);
+
+        if (!$company) {
+            throw new CompanyNotFoundException();
+        }
+
         $company->delete();
-        return response()->json(null, 204);
+        return apiResponse(null, 'Company deleted successfully', 204);
     }
 }
