@@ -139,6 +139,25 @@ class UsersTableSeeder extends Seeder
         $trialUserRole = Role::where('name', 'trial_user')->first();
 
         // Fetch permissions
+        $permissions = [
+            'create-branch',
+            'update-branch',
+            'delete-branch',
+            'create-company',
+            'update-company',
+            'delete-company',
+            'view_own_records',
+            'edit_own_records',
+            'create_records',
+            'manage_own_appointments',
+            'export_patient_data',
+            'import_patient_data',
+            'manage_all_appointments',
+            'send_communications'
+        ];
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
         $allPermissions = Permission::all()->pluck('id');
         $therapistPermissions = Permission::whereIn('name', [
             'view_own_records',
