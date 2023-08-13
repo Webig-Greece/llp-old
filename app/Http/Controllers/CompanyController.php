@@ -10,9 +10,10 @@ class CompanyController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('CheckPermission:create_company')->only('store');
-        $this->middleware('CheckPermission:update_company')->only('update');
-        $this->middleware('CheckPermission:delete_company')->only('destroy');
+        $this->middleware('auth:api');
+        $this->middleware('permission:create-company', ['only' => ['store']]);
+        $this->middleware('permission:update-company', ['only' => ['update']]);
+        $this->middleware('permission:delete-company', ['only' => ['destroy']]);
     }
 
     public function index()

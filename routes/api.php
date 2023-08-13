@@ -9,6 +9,7 @@ use App\Http\Controllers\PatientRecordController;
 use App\Http\Controllers\AppointmentController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\CompanyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +36,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::middleware(['account_type:main'])->group(function () {
         Route::apiResource('branches', BranchController::class);
+        Route::apiResource('companies', CompanyController::class);
     });
 });
 
