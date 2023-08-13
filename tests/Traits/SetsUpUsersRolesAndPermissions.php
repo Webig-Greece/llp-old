@@ -5,6 +5,7 @@ namespace Tests\Traits;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Company;
+use App\Models\Branch;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -18,12 +19,13 @@ trait SetsUpUsersRolesAndPermissions
 
     protected function setUpUsersRolesAndPermissions()
     {
-        // Load seeder companies from DB
-        $psychotherapyHealthCenter = \App\Models\Company::where('vat_number', '999999999')->firstOrFail();;
-        $counselorsHealthCenter = \App\Models\Company::where('vat_number', '999999998')->firstOrFail();
-        $lifeCoachingHealthCenter = \App\Models\Company::where('vat_number', '999999997')->firstOrFail();
-        // Load seeder branch from DB
-        $downtownClinic = \App\Models\Branch::where('name', 'Downtown Clinic')->firstOrFail();
+        // Create companies from DB
+        $psychotherapyHealthCenter = Company::factory()->create(['vat_number' => '999999999'])->firstOrFail();
+        $counselorsHealthCenter = Company::factory()->create(['vat_number' => '999999998'])->firstOrFail();
+        $lifeCoachingHealthCenter = Company::factory()->create(['vat_number' => '999999997'])->firstOrFail();
+
+        // Create branch from DB
+        $downtownClinic = Branch::factory()->create(['name' => 'Downtown Clinic'])->firstOrFail();
 
         // Define roles
         $adminRole = Role::create(['name' => 'admin']);

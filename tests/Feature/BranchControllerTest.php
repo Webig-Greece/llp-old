@@ -17,9 +17,6 @@ class BranchControllerTest extends TestCase
     {
         parent::setUp();
 
-        // Seed the database with companies and branches
-        $this->seed(CompaniesTableSeeder::class);
-        $this->seed(BranchesTableSeeder::class);
         // Set up the roles and permissions
         $this->setUpUsersRolesAndPermissions();
     }
