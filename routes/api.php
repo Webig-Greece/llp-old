@@ -31,12 +31,25 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('auth/logout', [AuthController::class, 'logout']);
     Route::get('auth/user-profile', [AuthController::class, 'userProfile']);
-    Route::post('/users/create-secretary', [AuthController::class, 'createSecretary']);
+    Route::post('/users/{id}/create-secretary', [AuthController::class, 'addSecretary']);
     Route::post('/users/create-secondary-professional', [AuthController::class, 'createSecondaryProfessionalAccount']);
 
     Route::middleware(['account_type:main'])->group(function () {
         Route::apiResource('branches', BranchController::class);
         Route::apiResource('companies', CompanyController::class);
+    });
+
+    Route::middleware(['permission:manage_subscriptions'])->group(function () {
+        Route::post('create-subscription', [PaymentController::class, 'createSubscription']);
+    });
+
+    // Reports
+    Route::middleware(['permission:view_reports'])->group(function () {
+        Route::get('reports/patient-treatment-summary', 'ReportController@patientTreatmentSummary');
+        Route::get('reports/appointment-statistics', 'ReportController@appointmentStatistics');
+        Route::get('reports/financial-reports', 'ReportController@financialReports');
+        Route::get('reports/professional-performance-analytics', 'ReportController@professionalPerformanceAnalytics');
+        Route::get('reports/usage-statistics', 'ReportController@usageStatistics');
     });
 });
 
@@ -46,25 +59,23 @@ Route::prefix('auth')->group(function () {
     Route::middleware(['auth:sanctum'])->post('/upgrade', [AuthController::class, 'upgrade']);
 });
 
-Route::middleware(['auth:api', 'permission:manage_subscriptions'])->group(function () {
-    Route::post('create-subscription', [PaymentController::class, 'createSubscription']);
-});
+// Email verification routes
+Route::get('email/verify', function () {
+    return response(['message' => 'Please verify your email address.']);
+})->name('verification.notice');
 
+Route::get('email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return response(['message' => 'Email verified!']);
+})->name('verification.verify');
+
+Route::post('email/resend', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return response(['message' => 'Verification link sent!']);
+})->middleware(['auth:api'])->name('verification.resend');
+
+// Stripe
 Route::post('stripe/webhook', [PaymentController::class, 'handleWebhook']);
-
-Route::apiResource('treatments', 'TreatmentController')->middleware('auth:api');
-
-// Reports
-Route::get('reports/patient-treatment-summary', 'ReportController@patientTreatmentSummary')
-    ->middleware('auth:api', 'permission:view_reports');
-Route::get('reports/appointment-statistics', 'ReportController@appointmentStatistics')
-    ->middleware('auth:api', 'permission:view_reports');
-Route::get('reports/financial-reports', 'ReportController@financialReports')
-    ->middleware('auth:api', 'permission:view_reports');
-Route::get('reports/professional-performance-analytics', 'ReportController@professionalPerformanceAnalytics')
-    ->middleware('auth:api', 'permission:view_reports');
-Route::get('reports/usage-statistics', 'ReportController@usageStatistics')
-    ->middleware('auth:api', 'permission:view_reports');
 
 
 

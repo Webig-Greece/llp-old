@@ -26,7 +26,7 @@ class ProfessionalAccountService
 
         // Create the secondary professional account
         $secondaryAccount = new User([
-            'account_type' => 'secondary',
+            'account_type' => 'professional',
             'first_name' => $validatedData['first_name'],
             'last_name' => $validatedData['last_name'],
             'email' => $validatedData['email'],

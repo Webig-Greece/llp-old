@@ -26,6 +26,10 @@ class SubscriptionPlan extends Model
 
     public function allowsAdditionalProfessionalAccounts()
     {
-        return $this->allows_additional_professional_accounts;
+        if ($this->subscriptionPlan) {
+            return $this->subscriptionPlan->allowsAdditionalProfessionalAccounts();
+        }
+
+        return false;
     }
 }

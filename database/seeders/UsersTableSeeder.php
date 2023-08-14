@@ -105,7 +105,7 @@ class UsersTableSeeder extends Seeder
             'password' => Hash::make('123456'),
             'trial_ends_at' => Carbon::now()->addDays(14),
             'email_verified_at' => Carbon::now(),
-            'account_type' => 'secondary',
+            'account_type' => 'secretary',
             'role_id' => 5, // Assigning role_id for Secretary
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),

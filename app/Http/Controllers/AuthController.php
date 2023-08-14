@@ -15,10 +15,20 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Services\ProfessionalAccountService;
+use App\Http\Requests\CreateSecondaryProfessionalAccountRequest;
 
 
 class AuthController extends Controller
 {
+
+    protected $professionalAccountService;
+
+    public function __construct(ProfessionalAccountService $professionalAccountService)
+    {
+        $this->professionalAccountService = $professionalAccountService;
+    }
+
     public function register(Request $request)
     {
         $request->validate([
@@ -141,7 +151,7 @@ class AuthController extends Controller
     public function userProfile(Request $request)
     {
         // Return the user's profile
-        return response()->json($request->user());
+        return response()->json(['user' => $request->user()]);
     }
 
     public function upgrade(Request $request)
@@ -173,11 +183,6 @@ class AuthController extends Controller
 
         // Update the user's trial_ends_at field to null since they're no longer a trial user
         $user->trial_ends_at = null;
-
-        // If the user wants to add additional secretary accounts, update their max_secretaries field
-        if ($request->additional_secretaries) {
-            $user->max_secretaries += $request->additional_secretaries;
-        }
 
         $user->save();
 
@@ -320,29 +325,27 @@ class AuthController extends Controller
         ]);
     }
 
-    public function addSecretary(Request $request)
+    public function addSecretary(Request $request, $id)
     {
         $request->validate([
             'firstName' => 'required|string',
             'lastName' => 'required|string',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|confirmed|min:8',
-            'profession' => 'required|in:secretary',
         ]);
 
         // Only allow professionals to add secretaries
-        $user = Auth::user();
-        $profession = Auth::user()->profession;
+        $user = User::findOrFail($id);
 
-        if (!$profession->isProfessional()) {
+        if (!$user->isProfessional()) {
             return response()->json([
                 'message' => 'Unauthorized'
             ], 403);
         }
 
-        // Check if the professional user has reached their maximum number of secretary accounts
+        // Check if the professional already has a secretary
         $secretaryCount = User::where('company_id', $user->company_id)->where('profession', 'secretary')->count();
-        if ($secretaryCount >= $user->max_secretaries) {
+        if ($secretaryCount >= 1) {
             return response()->json([
                 'message' => 'You have reached your maximum number of secretary accounts.'
             ], 400);
@@ -353,7 +356,7 @@ class AuthController extends Controller
             'last_name' => $request->input('lastName'),
             'email' => $request->input('email'),
             'password' => bcrypt($request->input('password')),
-            'profession' => $request->input('profession'),
+            'account_type' => 'secretary',
             'company_id' => $user->company_id, // Set the company_id to the ID of the professional's company
         ]);
 
@@ -366,5 +369,15 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Successfully added secretary!'
         ], 201);
+    }
+
+    public function createSecondaryProfessionalAccount(CreateSecondaryProfessionalAccountRequest $request)
+    {
+        try {
+            $secondaryAccount = $this->professionalAccountService->createSecondaryProfessionalAccount($request);
+            return response()->json(['message' => 'Secondary professional account created successfully', 'data' => $secondaryAccount], 201);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
     }
 }

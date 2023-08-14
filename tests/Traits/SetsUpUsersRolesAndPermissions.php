@@ -178,7 +178,7 @@ trait SetsUpUsersRolesAndPermissions
             'vat_number' => $this->generateVatNumber(),
             'trial_ends_at' => Carbon::now()->addDays(14),
             'email_verified_at' => Carbon::now(),
-            'account_type' => 'secondary',
+            'account_type' => 'secretary',
             'role_id' => $secretaryRole->id,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),

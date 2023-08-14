@@ -5,6 +5,8 @@ use Tests\Traits\SetsUpUsersRolesAndPermissions;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Role;
+use App\Services\ProfessionalAccountService;
+use App\Http\Requests\CreateSecondaryProfessionalAccountRequest;
 
 class AuthControllerTest extends TestCase
 {
@@ -32,10 +34,8 @@ class AuthControllerTest extends TestCase
             'roleIdentity' => 'freelancer',
             'language' => 'en',
         ];
-        dump($userData);
 
-        $response = $this->postJson('/auth/register', $userData);
-
+        $response = $this->postJson('api/auth/register', $userData);
         $response->assertStatus(201);
         $this->assertDatabaseHas('users', ['email' => 'john@example.com']);
     }
@@ -52,7 +52,7 @@ class AuthControllerTest extends TestCase
             'password' => 'password',
         ];
 
-        $response = $this->postJson('/auth/login', $loginData);
+        $response = $this->postJson('api/auth/login', $loginData);
 
         $response->assertStatus(200);
         $response->assertJsonStructure(['user', 'token']);
@@ -62,8 +62,7 @@ class AuthControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user, 'api')->postJson('/auth/logout');
-
+        $response = $this->actingAs($user, 'api')->postJson('/api/auth/logout');
         $response->assertStatus(200);
         $response->assertJson(['message' => 'Successfully logged out']);
     }
@@ -72,8 +71,7 @@ class AuthControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user, 'api')->getJson('/auth/user-profile');
-
+        $response = $this->actingAs($user, 'api')->getJson('api/auth/user-profile');
         $response->assertStatus(200);
         $response->assertJsonStructure(['user']);
     }
@@ -81,20 +79,67 @@ class AuthControllerTest extends TestCase
     public function test_add_secretary()
     {
         $user = User::factory()->create(['profession' => 'psychologist']);
-        $role = Role::factory()->create(['name' => 'secretary']);
 
         $secretaryData = [
             'firstName' => 'Secretary',
             'lastName' => 'User',
-            'email' => 'secretary@example.com',
+            'email' => 'secretary.example123@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
-            'profession' => 'secretary',
+            'account_type' => 'secretary'
         ];
 
-        $response = $this->actingAs($user, 'api')->postJson('/users/create-secretary', $secretaryData);
-
+        $response = $this->actingAs($user, 'api')->postJson('api/users/' . $user->id . '/create-secretary', $secretaryData);
         $response->assertStatus(201);
-        $this->assertDatabaseHas('users', ['email' => 'secretary@example.com']);
+        $this->assertDatabaseHas('users', ['account_type' => 'secretary']);
+        $this->assertDatabaseHas('users', ['email' => 'secretary.example123@example.com']);
+    }
+
+    public function test_add_professional()
+    {
+        $user = User::factory()->create(['profession' => 'psychologist', 'account_type' => 'main']);
+
+        $professionalData = [
+            'first_name' => 'Professional',
+            'last_name' => 'User',
+            'email' => 'professional.example123@example.com',
+            'profession' => 'psychologist',
+            'address' => '123 Main St',
+            'phone' => '123-456-7890',
+            'language' => 'en',
+        ];
+
+        // Make a POST request to the endpoint
+        $response = $this->actingAs($user, 'api')->postJson('api/users/create-secondary-professional', $professionalData);
+
+        // Assert the response status
+        $response->assertStatus(201);
+
+        // Assert the response data
+        $response->assertJson([
+            'message' => 'Secondary professional account created successfully',
+            'data' => [
+                'account_type' => 'professional',
+                'first_name' => 'Professional',
+                'last_name' => 'User',
+                'email' => 'professional.example123@example.com',
+                'profession' => 'psychologist',
+                'company_id' => $user->company_id,
+                'branch_id' => $user->branch_id,
+                'status' => 'active',
+            ],
+        ]);
+
+        // Assert the database has the new professional user
+        $this->assertDatabaseHas('users', [
+            'account_type' => 'professional',
+            'first_name' => 'Professional',
+            'last_name' => 'User',
+            'email' => 'professional.example123@example.com',
+            'profession' => 'psychologist',
+            'company_id' => $user->company_id,
+            'branch_id' => $user->branch_id,
+            'status' => 'active',
+        ]);
     }
 }
