@@ -30,6 +30,7 @@ class ProfessionalAccountService
             'first_name' => $validatedData['first_name'],
             'last_name' => $validatedData['last_name'],
             'email' => $validatedData['email'],
+            'password' => bcrypt($validatedData['password']),
             'profession' => $validatedData['profession'],
             'company_id' => $user->company_id,
             'branch_id' => $user->branch_id,

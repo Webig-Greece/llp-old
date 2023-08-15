@@ -26,6 +26,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'default_template',
         'company_id',
         'branch_id',
+        'subscription_plan_id',
     ];
 
     protected $hidden = [
@@ -139,6 +140,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function subscriptionPlanAllowsAdditionalAccounts()
     {
-        return $this->subscriptionPlan->allowsAdditionalProfessionalAccounts();
+        return $this->subscriptionPlan ? $this->subscriptionPlan->allowsAdditionalProfessionalAccounts() : false;
     }
 }

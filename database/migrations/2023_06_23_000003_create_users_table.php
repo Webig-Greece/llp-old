@@ -29,13 +29,15 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('language')->nullable();
             $table->enum('default_template', ['BIRP', 'DAP'])->default('BIRP');
-            $table->foreignId('company_id')->nullable()->constrained();
-            $table->foreignId('branch_id')->nullable()->constrained();
-            $table->foreignId('role_id')->nullable()->constrained();
             $table->string('status')->default('active');
             $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();
+
+            $table->foreignId('company_id')->nullable()->constrained();
+            $table->foreignId('branch_id')->nullable()->constrained();
+            $table->foreignId('role_id')->nullable()->constrained();
+            $table->foreignId('subscription_plan_id')->nullable()->constrained();
         });
     }
 

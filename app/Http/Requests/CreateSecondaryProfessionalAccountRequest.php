@@ -15,7 +15,6 @@ class CreateSecondaryProfessionalAccountRequest extends FormRequest
     {
         // Get the authenticated user
         $user = User::find(Auth::id());
-
         // Check if the user can create an additional professional account
         return $user->canCreateAdditionalProfessionalAccount();
     }
@@ -31,6 +30,7 @@ class CreateSecondaryProfessionalAccountRequest extends FormRequest
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|confirmed|min:8',
             'profession' => 'required|in:psychologist,counselor,coach,psychiatrist',
             'address' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',

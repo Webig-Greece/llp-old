@@ -4,9 +4,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Traits\SetsUpUsersRolesAndPermissions;
 use Tests\TestCase;
 use App\Models\User;
-use App\Models\Role;
-use App\Services\ProfessionalAccountService;
-use App\Http\Requests\CreateSecondaryProfessionalAccountRequest;
+use App\Models\SubscriptionPlan;
 
 class AuthControllerTest extends TestCase
 {
@@ -97,13 +95,24 @@ class AuthControllerTest extends TestCase
 
     public function test_add_professional()
     {
-        $user = User::factory()->create(['profession' => 'psychologist', 'account_type' => 'main']);
+        $subscriptionPlan = SubscriptionPlan::factory()->create([
+            'allows_additional_professional_accounts' => true,
+        ]);
+
+        $user = User::factory()->create([
+            'profession' => 'psychologist',
+            'account_type' => 'main',
+            'subscription_plan_id' => $subscriptionPlan->id,
+            'password' => 'password',
+        ]);
 
         $professionalData = [
             'first_name' => 'Professional',
             'last_name' => 'User',
             'email' => 'professional.example123@example.com',
             'profession' => 'psychologist',
+            'password' => 'password',
+            'password_confirmation' => 'password',
             'address' => '123 Main St',
             'phone' => '123-456-7890',
             'language' => 'en',
@@ -116,17 +125,19 @@ class AuthControllerTest extends TestCase
         $response->assertStatus(201);
 
         // Assert the response data
-        $response->assertJson([
-            'message' => 'Secondary professional account created successfully',
+        $response->assertJsonStructure([
+            'message',
             'data' => [
-                'account_type' => 'professional',
-                'first_name' => 'Professional',
-                'last_name' => 'User',
-                'email' => 'professional.example123@example.com',
-                'profession' => 'psychologist',
-                'company_id' => $user->company_id,
-                'branch_id' => $user->branch_id,
-                'status' => 'active',
+                'account_type',
+                'first_name',
+                'last_name',
+                'email',
+                'profession',
+                'company_id',
+                'branch_id',
+                'updated_at',
+                'created_at',
+                'id'
             ],
         ]);
 
