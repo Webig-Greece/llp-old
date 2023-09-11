@@ -12,6 +12,7 @@ database/migrations/2023_06_23_000004_create_patient_records_table.php
 database/migrations/2023_06_23_000005_create_role_user_table.php
 database/migrations/2023_06_23_000006_create_permission_role_table.php
 database/migrations/2023_06_23_000007_create_appointments_table.php
+database/migrations/2023_08_07_144208_create_treatments_table.php
 app/Models/Appointment.php
 app/Models/Branch.php
 app/Models/Company.php
@@ -20,6 +21,7 @@ app/Models/PatientRecord.php
 app/Models/Permission.php
 app/Models/Role.php
 app/Models/SubscriptionPlan.php
+app/Models/Treatment.php
 app/Models/User.php
 database/seeders/BranchesTableSeeder.php
 database/seeders/CompaniesTableSeeder.php
@@ -29,6 +31,7 @@ database/seeders/PermissionsTableSeeder.php
 database/seeders/RolesTableSeeder.php
 database/seeders/UsersTableSeeder.php
 app/Http/Middleware/Authenticate.php
+app/Http/Middleware/CheckAccountType.php
 app/Http/Middleware/CheckPermission.php
 app/Http/Middleware/CheckSubscription.php
 app/Http/Middleware/CorsMiddleware.php
@@ -40,6 +43,7 @@ app/Http/Middleware/TrustHosts.php
 app/Http/Middleware/TrustProxies.php
 app/Http/Middleware/ValidateSignature.php
 app/Http/Middleware/VerifyCsrfToken.php
+app/Http/Controllers/AdminController.php
 app/Http/Controllers/AppointmentController.php
 app/Http/Controllers/AuthController.php
 app/Http/Controllers/BranchController.php
@@ -50,6 +54,9 @@ app/Http/Controllers/InvoiceController.php
 app/Http/Controllers/PatientRecordController.php
 app/Http/Controllers/PaymentController.php
 app/Http/Controllers/PermissionController.php
+app/Http/Controllers/ReportController.php
 app/Http/Controllers/RoleController.php
 app/Http/Controllers/SubscriptionPlanController.php
+app/Http/Controllers/TreatmentController.php
+app/Http/Controllers/UserController.php
 app/Http/Controllers/UserSubscriptionController.php
