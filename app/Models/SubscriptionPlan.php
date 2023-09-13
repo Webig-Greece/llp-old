@@ -28,4 +28,18 @@ class SubscriptionPlan extends Model
     {
         return $this->allows_additional_professional_accounts;
     }
+
+    public function getSubscriptionRoleForPlan()
+    {
+        // Define a mapping of subscription plan names to roles
+        $planToRoleMap = [
+            'basic' => 'basicPlanRole',
+            'premium' => 'premiumPlanRole',
+            'trial' => 'trialUserRole',
+            // ... add other plans and their corresponding roles as needed
+        ];
+
+        // Return the role associated with the current subscription plan's name
+        return $planToRoleMap[$this->name] ?? null;
+    }
 }

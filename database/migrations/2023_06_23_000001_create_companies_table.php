@@ -17,6 +17,7 @@ class CreateCompaniesTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('vat_number')->unique();
+            $table->date('vat_verification_date')->nullable();
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();

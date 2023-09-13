@@ -14,8 +14,15 @@ trait SetsUpUsersRolesAndPermissions
 {
     private function generateVatNumber()
     {
-        return mt_rand(100000000, 999999999);
+        // Generate two random uppercase letters
+        $letters = chr(mt_rand(65, 90)) . chr(mt_rand(65, 90));
+
+        // Generate a random number between 100000000 and 999999999
+        $numbers = mt_rand(100000000, 999999999);
+
+        return $letters . $numbers;
     }
+
 
     protected function setUpUsersRolesAndPermissions()
     {

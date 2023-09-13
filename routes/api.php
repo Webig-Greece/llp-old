@@ -56,7 +56,7 @@ Route::middleware('auth:api')->group(function () {
 Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
-    Route::middleware(['auth:sanctum'])->post('/upgrade', [AuthController::class, 'upgrade']);
+    Route::middleware(['auth:sanctum'])->post('/change-subscription', [AuthController::class, 'changeSubscription']);
 });
 
 // Email verification routes

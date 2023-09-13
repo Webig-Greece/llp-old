@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Role;
+use App\Models\SubscriptionPlan;
 use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +18,10 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Services\ProfessionalAccountService;
 use App\Http\Requests\CreateSecondaryProfessionalAccountRequest;
+use SoapClient;
+
+use Illuminate\Support\Facades\Log;
+
 
 
 class AuthController extends Controller
@@ -36,7 +41,7 @@ class AuthController extends Controller
             'lastName' => 'required|string',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|confirmed|min:8',
-            'vatNumber' => 'required|string|min:9',
+            'vatNumber' => 'required|string|min:9|alpha_num',
             'acceptTerms' => 'required|accepted',
             'profession' => 'required|in:psychologist,counselor,coach,psychiatrist',
             'roleIdentity' => 'required|in:freelancer,company',
@@ -44,21 +49,28 @@ class AuthController extends Controller
             'company_name' => 'nullable|string'
         ]);
 
-        if ($request->input('roleIdentity') == 'freelancer') {
-            // Create a new freelancer company
-            $company = new Company([
-                'name' => $request->input('firstName') . ' ' . $request->input('lastName'), // You can change this according to your needs
-                'vat_number' => $request->input('vatNumber'),
-            ]);
-            $company->save();
-        } else if ($request->input('roleIdentity') == 'company') {
-            // Create a new company
-            $company = new Company([
-                'name' => $request->input('company_name'),
-                'vat_number' => $request->input('vatNumber'),
-            ]);
-            $company->save();
+        // Extract the first two characters of the VAT number as the country code
+        $countryCode = substr($request->input('vatNumber'), 0, 2);
+        $vatNumber = substr($request->input('vatNumber'), 2);
+
+        // Verify the VAT number
+        $vatResult = $this->verifyVATNumber($countryCode, $vatNumber);
+
+        if (!$vatResult || !$vatResult->valid) {
+            return response()->json(['message' => 'Invalid VAT number'], 400);
         }
+
+        // Use the company name from the VIES API if available, otherwise use the provided name
+        $companyName = $vatResult->name ?? ($request->input('company_name') ?? ($request->input('firstName') . ' ' . $request->input('lastName')));
+
+        // Create the new Company
+        $company = new Company([
+            'name' => $companyName, // Store the company name if available
+            'vat_number' => $request->input('vatNumber'),
+            'address' => $vatResult->address ?? null, // Store the address if available
+            'vat_verification_date' => $vatResult->requestDate, // Store the request date
+        ]);
+        $company->save();
 
         $user = new User([
             'first_name' => $request->input('firstName'),
@@ -154,40 +166,55 @@ class AuthController extends Controller
         return response()->json(['user' => $request->user()]);
     }
 
-    public function upgrade(Request $request)
+    public function changeSubscription(Request $request)
     {
         $user = User::find(Auth::id());
 
         // Validate the request data
         $request->validate([
-            'subscription_plan' => 'required|string', // The name of the subscription plan the user is upgrading to
+            'subscription_plan' => 'required|string', // The name of the subscription plan the user is changing to
             'additional_secretaries' => 'nullable|integer|min:0', // The number of additional secretary accounts the user wants to add
         ]);
 
-        // Get the role associated with the subscription plan
-        $role = Role::where('name', $request->subscription_plan)->first();
+        // Fetch the subscription plan the user wants to change to
+        $newSubscriptionPlan = SubscriptionPlan::where('name', $request->subscription_plan)->first();
 
-        if (!$role) {
+        if (!$newSubscriptionPlan) {
             return response()->json([
                 'message' => 'Invalid subscription plan'
             ], 400);
         }
 
-        // If the user is currently a trial user, set subscribed_from_trial to true
+        // If the user is currently a trial user
         if ($user->hasRole('trial_user')) {
             $user->subscribed_from_trial = true;
+            $user->trial_ends_at = null; // End the trial
         }
 
-        // Update the user's role
-        $user->roles()->sync($role);
+        // Update the user's subscription plan
+        $user->subscription_plan_id = $newSubscriptionPlan->id;
 
-        // Update the user's trial_ends_at field to null since they're no longer a trial user
-        $user->trial_ends_at = null;
+        // Get the subscription role based on the new subscription plan
+        $subscriptionRoleName = $newSubscriptionPlan->getSubscriptionRoleForPlan();
+        $subscriptionRole = Role::where('name', $subscriptionRoleName)->first();
+
+        if (!$subscriptionRole) {
+            return response()->json([
+                'message' => 'Role not found'
+            ], 400);
+        }
+
+        // Detach all subscription roles from the user (to ensure they only have one subscription role)
+        $allSubscriptionRoles = Role::whereIn('name', ['trial_user', 'basicPlanRole', 'premiumPlanRole'])->get();
+        $user->roles()->detach($allSubscriptionRoles);
+
+        // Attach the new subscription role to the user
+        $user->roles()->attach($subscriptionRole);
 
         $user->save();
 
         return response()->json([
-            'message' => 'Successfully upgraded user!'
+            'message' => 'Successfully changed subscription!'
         ], 200);
     }
 
@@ -379,5 +406,43 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
+    }
+
+    public function createSoapClient()
+    {
+        return new TestableSoapClient("https://ec.europa.eu/taxation_customs/vies/services/checkVatService.wsdl");
+    }
+
+    public function verifyVATNumber(string $countryCode, string $vatNumber): object
+    {
+        try {
+            $client = $this->createSoapClient();
+            $result = $client->checkVat(['countryCode' => $countryCode, 'vatNumber' => $vatNumber]);
+            // Log::info('SOAP Client Result:', ['result' => $result]);
+
+            if ($result === null) {
+                throw new \Exception('SOAP Client returned null.');
+            }
+
+            return $result;
+        } catch (\Exception $e) {
+            // Log::error('SOAP Client Error:', ['error' => $e->getMessage()]);
+            return (object) ['valid' => false];
+        }
+    }
+}
+
+// Overwite __doRequest to make it work
+class TestableSoapClient extends \SoapClient
+{
+    public function __doRequest($request, $location, $action, $version, $one_way = 0)
+    {
+        // Log::info('SOAP Request:', ['request' => $request]);
+
+        $response = parent::__doRequest($request, $location, $action, $version, $one_way);
+
+        // Log::info('SOAP Response:', ['response' => $response]);
+
+        return $response;
     }
 }
